@@ -233,7 +233,8 @@ window.addEventListener('message', async e => {
 			break;
 
 		case 'modelLoading':
-			showProgress('Loading embedding model…', 0, 'Indexing will begin when the model is ready.');
+			showProgress('Loading Qwen embedding model…', 0,
+				msg.mode === 'search' ? 'Semantic search will begin when the model is ready.' : 'Indexing will begin when the model is ready.');
 			setBadge('Loading model…');
 			break;
 
@@ -281,6 +282,8 @@ window.addEventListener('message', async e => {
 			break;
 
 		case 'searchResults':
+			hideProgress();
+			hideEmbedProgress();
 			displayResults(msg.results);
 			searchStatus.textContent = msg.message || 'Verified current workspace results.';
 			setBadge(msg.results.length > 0 ? msg.results.length + ' results' : 'No results', msg.results.length > 0 ? 'ok' : '');
@@ -288,6 +291,8 @@ window.addEventListener('message', async e => {
 			break;
 
 		case 'searchError':
+			hideProgress();
+			hideEmbedProgress();
 			setBadge('Search error: ' + msg.message, 'err');
 			btnSearch.disabled = false;
 			break;

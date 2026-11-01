@@ -85,7 +85,7 @@ function resetWatchdog(requestId: string): void {
 	const timeout = request.type === 'embedQuery' ? QUERY_TIMEOUT_MS : BATCH_IDLE_TIMEOUT_MS;
 	request.timer = setTimeout(() => finish(requestId, new Error(
 		request.type === 'embedQuery'
-			? 'Query embedding timed out after 60 seconds. Current-file lexical search is still available.'
+			? 'Query embedding timed out after 60 seconds. Semantic search cannot return results without the Qwen model.'
 			: 'Batch embedding timed out after 120 seconds without progress. The index was not committed.',
 	)), timeout);
 }

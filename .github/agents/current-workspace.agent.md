@@ -21,7 +21,7 @@ disable-model-invocation: true
 
 Use #codebaseSemanticIndex for concept discovery in the current workspace. Use local text and symbol search for known identifiers. Read the relevant current source ranges before editing, including unsaved editor contents when present.
 
-Use only current-workspace source as implementation evidence. Do not use built-in semantic codebase search, remote repository search, other checkouts, or historical source unless the user explicitly requests it. If semantic retrieval reports stale or unavailable embeddings, use its current-file lexical fallback and focused local searches; do not substitute historical snippets.
+Use only current-workspace source as implementation evidence. Do not use built-in semantic codebase search, remote repository search, other checkouts, or historical source unless the user explicitly requests it. A first semantic search may load Qwen and build or reconcile the workspace index. If semantic retrieval reports unavailable embeddings or indexing, use focused local text and symbol search; do not substitute historical snippets.
 
 Keep exploration scoped to the required roots and paths. Treat workspace root identities in results as significant. Run terminal commands from the relevant current workspace root for local inspection, builds, and tests; do not use terminal access to bypass the source-selection instructions.
 

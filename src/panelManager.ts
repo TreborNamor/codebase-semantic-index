@@ -52,6 +52,7 @@ async function handleMessage(msg: Record<string, unknown>): Promise<void> {
 		case 'buildIndex': if (!folders.length) { throw new Error('No workspace folder is open.'); } await buildAll(); break;
 		case 'searchQuery': {
 			try {
+				if (!isEmbeddingModelReady()) { currentView?.webview.postMessage({ type: 'modelLoading', mode: 'search' }); }
 				const response = await workspaceIndex.search(String(msg.query ?? ''), undefined, 5);
 				const results = response.results.map(result => {
 					const excerpt = candidateExcerpt(result.candidate);
@@ -81,7 +82,7 @@ async function handleMessage(msg: Record<string, unknown>): Promise<void> {
 export async function buildAll(): Promise<void> {
 	try {
 		if (!isEmbeddingModelReady()) {
-			currentView?.webview.postMessage({ type: 'modelLoading' });
+			currentView?.webview.postMessage({ type: 'modelLoading', mode: 'index' });
 			await waitForEmbeddingReady();
 		}
 		currentView?.webview.postMessage({ type: 'chunkStart', total: 1 });

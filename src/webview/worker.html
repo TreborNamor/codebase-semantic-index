@@ -63,8 +63,8 @@ hr{border:none;border-top:1px solid var(--csi-line)}
 
 <p class="desc">
 	Runs the ONNX embedding model (<span class="mono">onnx-community/Qwen3-Embedding-0.6B-ONNX</span>) used by Codebase Semantic Index.
-	<strong style="color:var(--vscode-editor-foreground,#d4d4d4)">Please do not close this tab</strong> &#x2014;
-	if you do, it will be recreated automatically the next time a search or build is triggered.
+	The model loads when you build the index or run a semantic search. It stays idle until requested.
+	<strong style="color:var(--vscode-editor-foreground,#d4d4d4)">Keep this view open while it is loading or embedding.</strong>
 </p>
 
 <hr>
@@ -173,7 +173,7 @@ function startModelLoad() {
 		// Webviews are not consistently cross-origin isolated. Avoid worker-thread
 		// startup failures while retaining inference outside the extension host.
 		env.backends.onnx.wasm.numThreads = 1;
-		setStatus('Loading model (WASM q8)…');
+		setStatus('Loading Qwen model (WASM q8)…');
 		const extractor = await pipeline(
 			'feature-extraction',
 			EMBEDDING_CONFIG.model,

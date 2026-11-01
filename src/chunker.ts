@@ -75,7 +75,7 @@ export async function chunkFile(uri: vscode.Uri, workspaceRootPath: string): Pro
 	return chunkDocument(await vscode.workspace.openTextDocument(uri), root);
 }
 
-/** Fast, complete source windows for lexical fallback while semantic indexing catches up. */
+/** Fast, complete source windows used when symbol-aware chunking is unavailable. */
 export function chunkText(text: string, file: string): RawChunk[] {
 	return splitSource(text, file);
 }

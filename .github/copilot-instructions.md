@@ -26,12 +26,12 @@ for the user to mention the tool.
   source around the excerpt before editing; include unsaved editor contents.
   Re-read affected source after a checkout or intervening edit. Excerpts can be
   incomplete, and rank scores are ordering signals, not confidence percentages.
-- Read status messages. Changed/unindexed files or unavailable embeddings can
-  produce current-file lexical fallback results rather than full semantic
-  retrieval. Use focused local searches to fill gaps. Do not repeatedly retry a
+- Read status messages. A first search may load Qwen and reconcile the index.
+  If indexing or embedding is unavailable, the tool returns no lexical fallback
+  results. Use focused local searches to fill gaps. Do not repeatedly retry a
   failing tool; report a persistent availability/indexing problem when relevant.
 - Empty or shortened output does not prove functionality is absent: exclusions,
-  pending indexing, lexical fallback, and output-token limits can omit matches.
+  pending indexing, unavailable embeddings, and output-token limits can omit matches.
 
 Use current-workspace source as implementation evidence. Use built-in semantic
 codebase search, remote repository search, other checkouts, or historical source

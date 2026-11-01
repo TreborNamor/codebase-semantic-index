@@ -128,7 +128,7 @@ export class WorkspaceIndexService implements vscode.Disposable {
 			if (!this.active(root) || state.removed) { return; }
 			await state.queue.request(force);
 		}
-		catch (error) { state.status = `Index update failed: ${(error as Error).message}. Current-file lexical search remains available.`; throw error; }
+		catch (error) { state.status = `Index update failed: ${(error as Error).message}. Semantic search is unavailable until indexing succeeds.`; throw error; }
 		finally { this.emit(state); }
 	}
 
@@ -273,7 +273,11 @@ export class WorkspaceIndexService implements vscode.Disposable {
 		if (snapshot.dirty) {
 			overlay.pending = embedBatch(overlay.chunks.map(chunk => ({ text: [chunk.file, chunk.text].join('\n'), file: chunk.file })), () => {}, this.state(root).cancellation.token)
 				.then(vectors => { if (this.overlays.get(key) === overlay) { overlay.vectors = vectors; } })
-				.catch(error => { const state = this.roots.get(workspaceKey(root)); if (state) { state.status = `Unsaved-file embedding failed: ${(error as Error).message}; lexical matches remain available.`; this.emit(state); } });
+				.catch(error => {
+					const state = this.roots.get(workspaceKey(root));
+					if (state) { state.status = `Unsaved-file embedding failed: ${(error as Error).message}; the file is omitted from semantic results.`; this.emit(state); }
+					throw error;
+				});
 		}
 		return overlay;
 	}
@@ -282,14 +286,20 @@ export class WorkspaceIndexService implements vscode.Disposable {
 		const prefix = normalizePathPrefix(pathPrefix);
 		const statuses = new Set<string>();
 		const candidates: RetrievalCandidate[] = [];
-		const staleRoots = new Set<vscode.Uri>();
 		const folders = [...(vscode.workspace.workspaceFolders ?? [])];
 		cancelled(token);
+		if (!folders.length) { return { results: [], statuses: ['No workspace folder is open.'] }; }
+		// A semantic search needs vectors. A first search loads Qwen and reconciles
+		// each workspace before querying; extension startup remains model-free.
+		for (const folder of folders) {
+			cancelled(token);
+			await this.rebuild(folder.uri);
+		}
 		for (const folder of folders) {
 			const state = this.state(folder.uri);
 			await state.loaded;
 			const files = await this.eligible(folder.uri);
-			let stale = !state.index;
+			let stale = false;
 			for (const uri of files) {
 				cancelled(token);
 				const file = relativeWorkspacePath(uri, folder.uri)!;
@@ -297,6 +307,18 @@ export class WorkspaceIndexService implements vscode.Disposable {
 				const snapshot = await this.read(uri, folder.uri, true);
 				if (!snapshot) { continue; }
 				const indexed = state.index;
+				if (snapshot.dirty) {
+					const overlay = this.overlay(snapshot, folder.uri);
+					try { await overlay.pending; }
+					catch (error) { statuses.add(`Unsaved-file embedding failed: ${(error as Error).message}`); continue; }
+					if (!overlay.vectors) { statuses.add(`Unsaved changes in ${file} are not embedded yet.`); continue; }
+					for (const [i, chunk] of overlay.chunks.entries()) {
+						candidates.push({ file, range: chunk.range, text: chunk.text, symbolName: chunk.symbolName,
+							vector: overlay.vectors.subarray(i * VECTOR_DIM, (i + 1) * VECTOR_DIM),
+							rootUri: workspaceKey(folder.uri), contentHash: snapshot.hash });
+					}
+					continue;
+				}
 				const matched = indexed?.data.files[file]?.hash === snapshot.hash;
 				let valid = !!matched;
 				const local: RetrievalCandidate[] = [];
@@ -310,31 +332,23 @@ export class WorkspaceIndexService implements vscode.Disposable {
 					}
 				}
 				if (valid) { candidates.push(...local); }
-				else {
-					stale = true;
-					const overlay = this.overlay(snapshot, folder.uri);
-					for (const [i, chunk] of overlay.chunks.entries()) {
-						candidates.push({ file, range: chunk.range, text: chunk.text, symbolName: chunk.symbolName,
-							vector: overlay.vectors?.subarray(i * VECTOR_DIM, (i + 1) * VECTOR_DIM),
-							rootUri: workspaceKey(folder.uri), contentHash: snapshot.hash });
-					}
-				}
+				else { stale = true; }
 			}
 			if (state.status) { statuses.add(state.status); }
-			if (stale) { statuses.add('Current-file lexical fallback is active for changed/unindexed files.'); staleRoots.add(folder.uri); }
+			if (stale) {
+				statuses.add('Workspace files changed during search; stale files were omitted and reconciliation was scheduled.');
+				this.schedule(folder.uri);
+			}
 		}
+		const timeout = new vscode.CancellationTokenSource();
+		const subscription = token?.onCancellationRequested(() => timeout.cancel());
+		const timer = setTimeout(() => timeout.cancel(), 60_000);
 		let queryVector: Float32Array | undefined;
-		if (candidates.some(candidate => candidate.vector)) {
-			const timeout = new vscode.CancellationTokenSource();
-			const subscription = token?.onCancellationRequested(() => timeout.cancel());
-			const timer = setTimeout(() => timeout.cancel(), 2500);
-			try { queryVector = await embedQuery(query, timeout.token); }
-			catch (error) { cancelled(token); statuses.add(`Semantic query unavailable; using current-file lexical search: ${(error as Error).message}`); }
-			finally { clearTimeout(timer); subscription?.dispose(); timeout.dispose(); }
-		}
-		for (const root of staleRoots) { this.schedule(root); }
+		try { queryVector = await embedQuery(query, timeout.token); }
+		catch (error) { cancelled(token); statuses.add(`Semantic search unavailable; no lexical results were returned: ${(error as Error).message}`); }
+		finally { clearTimeout(timer); subscription?.dispose(); timeout.dispose(); }
 		cancelled(token);
-		const ranked = rankCandidates(candidates, query, queryVector, 20);
+		const ranked = queryVector ? rankCandidates(candidates, query, queryVector, 20) : [];
 		const verified = await this.verify(ranked, token);
 		const limit = normalizeMaxResults(maxResults);
 		return { results: verified.slice(0, limit), statuses: [...statuses] };

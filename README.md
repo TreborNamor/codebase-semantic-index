@@ -7,7 +7,7 @@ The retrieval contract is: **every returned code excerpt comes from an eligible 
 ## Get started
 
 1. Install the extension and open your project or multi-root workspace.
-2. Open VS Code without triggering model downloads or indexing in the background. Use **Codebase Semantic Index: Build Index** (or the Activity Bar panel) when you want to create or rebuild the index. The model loads then, followed by indexing. Searching an existing index loads the model on the first semantic query. After the model is active, file changes reconcile automatically. Inference runs locally using q8 WASM after the first model download. This release uses a consistent single-threaded WASM backend instead of attempting unsupported quantized WebGPU operations.
+2. Open VS Code without triggering model downloads or indexing in the background. Use **Codebase Semantic Index: Build Index** to build explicitly, or run a search to load Qwen and synchronize the index automatically. The first search can take time while the model downloads and current files are embedded. After the model is active, file changes reconcile automatically. Inference runs locally using q8 WASM after the first model download. This release uses a consistent single-threaded WASM backend instead of attempting unsupported quantized WebGPU operations.
 3. Open Copilot Chat and select **Agent** mode.
 4. Check that **Codebase Semantic Index: Semantic Search** is enabled in the active agent's tool selection, as described below. If it is already enabled, no additional toggle is needed.
 5. Ask a codebase question normally; you do not need to mention the tool in every prompt. For example:
@@ -50,10 +50,10 @@ The composer lives in its own **Prompt Refinement** Activity Bar container, sepa
 
 - Each workspace root has separate state and storage, identified by its complete URI, including scheme and remote authority. Separate worktrees do not share an index just because they use the same repository or branch name.
 - A saved-file manifest records content hashes. Reconciliation discovers changed/new files, removes deleted or newly excluded files, and reuses unchanged embeddings. File changes received during a build remain queued.
-- Unsaved documents form a transient overlay. Search validates indexed content against live files and buffers, suppresses stale embeddings, and returns current-file lexical matches while updates are pending.
+- Unsaved documents form a transient overlay and are embedded before they can appear in semantic results. Search synchronizes saved files before retrieval and suppresses stale embeddings.
 - Long functions and module-level gaps are split into bounded source chunks instead of being truncated. Results include precise source ranges.
 - Identifier/path/text rankings and vector similarity are fused, and overlapping results are deduplicated. Similarity is not a probability or a percentage match.
-- Model failures, invalid vectors, and incompatible indexes are reported explicitly. When semantic search is unavailable, the tool identifies its current-file lexical fallback; a zero-vector embedding is never treated as success.
+- Model failures, invalid vectors, and incompatible indexes are reported explicitly. Semantic search fails closed with no lexical fallback when embeddings are unavailable; a zero-vector embedding is never treated as success.
 
 Indexes live under `.codebase-semantic-index/` within each root. Immutable data/vector generations are published through a committed manifest with integrity hashes so readers do not mix generations. Old generations are retained to avoid deleting files used by another open window. Indexes from older releases, another root, or a different embedding/chunker configuration must be rebuilt from current files; historical previews are not trusted or migrated into fresh results. Use **Build Index** to rebuild.
 
@@ -71,7 +71,7 @@ The registered tool name remains `codebase_semantic_index_search`, with the prom
 | `maxResults` | Optional integer; defaults to 5 and is bounded to 1–20. |
 | `pathPrefix` | Optional literal workspace-relative file or directory, such as `src/services`; applied inside each root. Absolute paths, URIs, and parent traversal are rejected. |
 
-Results identify their workspace root, relative file path, symbol when available, exact excerpt range, and a short current source excerpt. The tool honors VS Code's supplied output-token budget when available, so it can return fewer results than requested. Use semantic retrieval for concept discovery, local text/symbol search for known names, and narrow source reads before editing.
+Results show a workspace-relative file path, symbol when available, exact excerpt range, and a short current source excerpt without the workspace name. The tool honors VS Code's supplied output-token budget when available, so it can return fewer results than requested. Use semantic retrieval for concept discovery, local text/symbol search for known names, and narrow source reads before editing.
 
 ## Optional current-workspace agent
 
@@ -97,7 +97,7 @@ npm run test:refiner-ui
 npm run run-in-browser
 ```
 
-`test:web` requires an existing extension bundle from `compile-web` or `package-web`. It runs the real extension and public tool in a headless VS Code web host with model downloads blocked, checking saved files, checkout replacement, unsaved edits, ignore changes, and deletion. It validates lexical fallback rather than model inference. `run-in-browser` opens an interactive VS Code web development host. Copilot integration additionally requires a signed-in host with Copilot and this extension's tool enabled. Create a production bundle or an installable VSIX with:
+`test:web` requires an existing extension bundle from `compile-web` or `package-web`. Its current smoke fixture was written for lexical fallback and needs an embedding mock before it can validate semantic-only retrieval. It does not test real model inference. `run-in-browser` opens an interactive VS Code web development host. Copilot integration additionally requires a signed-in host with Copilot and this extension's tool enabled. Create a production bundle or an installable VSIX with:
 
 ```sh
 npm run package-web
