@@ -8,6 +8,9 @@ let isModelReady = false;
 let modelFailure: Error | undefined;
 let workerPageReady = false;
 let modelLoadRequested = false;
+export interface EmbeddingStatus { state: 'idle' | 'loading' | 'ready' | 'error'; message?: string }
+let embeddingStatus: EmbeddingStatus = { state: 'idle' };
+const statusListeners = new Set<(status: EmbeddingStatus) => void>();
 let requestSequence = 0;
 let lastIndexStats: Record<string, unknown> | null = null;
 
@@ -46,6 +49,19 @@ function asError(error: unknown): Error {
 	return error instanceof Error ? error : new Error(String(error));
 }
 
+export function getEmbeddingStatus(): EmbeddingStatus { return embeddingStatus; }
+
+export function onEmbeddingStatusChanged(listener: (status: EmbeddingStatus) => void): vscode.Disposable {
+	statusListeners.add(listener);
+	listener(embeddingStatus);
+	return { dispose: () => { statusListeners.delete(listener); } };
+}
+
+function setEmbeddingStatus(status: EmbeddingStatus): void {
+	embeddingStatus = status;
+	for (const listener of statusListeners) { listener(status); }
+}
+
 function postControlMessage(message: Record<string, unknown>): void {
 	try {
 		void workerView?.webview.postMessage(message).then(undefined, () => undefined);
@@ -55,6 +71,7 @@ function postControlMessage(message: Record<string, unknown>): void {
 function requestModelLoad(): void {
 	if (isModelReady || modelFailure) { return; }
 	modelLoadRequested = true;
+	setEmbeddingStatus({ state: 'loading' });
 	if (workerPageReady) { postControlMessage({ type: 'loadModel' }); }
 }
 
@@ -132,6 +149,7 @@ function handleMessage(msg: Record<string, unknown>): void {
 	if (msg.type === 'modelReady') {
 		isModelReady = true;
 		modelFailure = undefined;
+		setEmbeddingStatus({ state: 'ready' });
 		resolveModelReady();
 		for (const requestId of requests.keys()) { dispatch(requestId); }
 		return;
@@ -139,6 +157,7 @@ function handleMessage(msg: Record<string, unknown>): void {
 	if (msg.type === 'modelError') {
 		isModelReady = false;
 		modelFailure = new Error(`Embedding model failed to load: ${String(msg.message)}`);
+		setEmbeddingStatus({ state: 'error', message: modelFailure.message });
 		rejectModelReady(modelFailure);
 		rejectAll(modelFailure);
 		return;
@@ -185,6 +204,7 @@ export class CodebaseSemanticIndexWorkerProvider implements vscode.WebviewViewPr
 		modelFailure = undefined;
 		workerPageReady = false;
 		modelLoadRequested = false;
+		setEmbeddingStatus({ state: 'idle' });
 		resetModelReadyGate();
 		const distUri = vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'web');
 		const webview = view.webview;
@@ -202,6 +222,7 @@ export class CodebaseSemanticIndexWorkerProvider implements vscode.WebviewViewPr
 			modelFailure = undefined;
 			workerPageReady = false;
 			modelLoadRequested = false;
+			setEmbeddingStatus({ state: 'idle' });
 		});
 		const config = JSON.stringify({ model: MODEL_NAME, revision: MODEL_REVISION, dimension: VECTOR_DIM, queryInstruction: QUERY_INSTRUCTION }).replace(/</g, '\\u003c');
 		webview.html = workerHtml
@@ -216,11 +237,9 @@ async function ensureWorkerView(): Promise<void> {
 	if (!workerView) { await vscode.commands.executeCommand('codebase-semantic-index.worker.focus'); }
 }
 
-/** Create the worker webview at startup so its status container remains visible.
- *  Loading the ONNX runtime and model stays lazy until an embedding is requested.
- */
+/** Create the worker view and warm Qwen before the user starts an index build. */
 export function initEmbeddingWorker(): void {
-	void ensureWorkerView().catch(error => console.error('[Codebase Semantic Index worker]', error));
+	void waitForEmbeddingReady().catch(error => console.error('[Codebase Semantic Index worker]', error));
 }
 
 /** Wait until the worker has loaded the model before starting any index reconciliation. */

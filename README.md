@@ -7,7 +7,7 @@ The retrieval contract is: **every returned code excerpt comes from an eligible 
 ## Get started
 
 1. Install the extension and open your project or multi-root workspace.
-2. Open VS Code without triggering model downloads or indexing in the background. Use **Codebase Semantic Index: Build Index** to build explicitly, or run a search to load Qwen and synchronize the index automatically. The first search can take time while the model downloads and current files are embedded. After the model is active, file changes reconcile automatically. Inference runs locally using q8 WASM after the first model download. This release uses a consistent single-threaded WASM backend instead of attempting unsupported quantized WebGPU operations.
+2. Open VS Code. Qwen loads asynchronously during startup, and the **Build Index** button stays disabled until the model is ready. Loading the model does not start indexing. Click **Build Index** to create or rebuild the index; searches synchronize current files before retrieving results. The first model download can take time. After the model is active, file changes reconcile automatically. Inference runs locally using q8 WASM. This release uses a consistent single-threaded WASM backend instead of attempting unsupported quantized WebGPU operations.
 3. Open Copilot Chat and select **Agent** mode.
 4. Check that **Codebase Semantic Index: Semantic Search** is enabled in the active agent's tool selection, as described below. If it is already enabled, no additional toggle is needed.
 5. Ask a codebase question normally; you do not need to mention the tool in every prompt. For example:

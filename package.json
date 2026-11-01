@@ -2,7 +2,7 @@
   "name": "codebase-semantic-index",
   "displayName": "Codebase Semantic Index",
   "description": "Semantic search for your codebase using local AI embeddings. Find code by concept, not just keywords.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "TreborNamor",
   "repository": {
     "type": "git",
@@ -113,7 +113,7 @@
           "semantic"
         ],
         "displayName": "Codebase Semantic Index: Semantic Search",
-        "modelDescription": "Search current workspace files by concept using the local Qwen embedding model and hybrid vector, identifier, path, and text ranking. A first search loads the model and synchronizes the workspace index. Results are verified against current files and unsaved editor contents. If embedding or indexing is unavailable, returns an explicit error with no lexical fallback. Supports workspace-relative path filtering. No remote repository or historical code is searched.",
+        "modelDescription": "Search current workspace files by concept using the local Qwen embedding model and hybrid vector, identifier, path, and text ranking. Qwen loads during VS Code startup; search synchronizes the workspace index before retrieval. Results are verified against current files and unsaved editor contents. If embedding or indexing is unavailable, returns an explicit error with no lexical fallback. Supports workspace-relative path filtering. No remote repository or historical code is searched.",
         "inputSchema": {
           "type": "object",
           "properties": {

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { workspaceIndex, IndexStatus } from './workspaceIndex';
-import { isEmbeddingModelReady, postWorkerStatus, waitForEmbeddingReady } from './embeddingWorker';
+import { getEmbeddingStatus, isEmbeddingModelReady, onEmbeddingStatusChanged, postWorkerStatus, waitForEmbeddingReady } from './embeddingWorker';
 import { candidateExcerpt } from './retrieval';
 import { isInsideWorkspaceRoot, workspaceKey } from './utils';
 import panelHtml from './webview/panel.html';
@@ -11,7 +11,10 @@ let pendingAutoBuild = false;
 export class CodebaseSemanticIndexViewProvider implements vscode.WebviewViewProvider {
 	public static readonly viewType = 'codebase-semantic-index.panel';
 	constructor(private readonly context: vscode.ExtensionContext) {
-		context.subscriptions.push(workspaceIndex.onStatus(status => { void publishStatus(status); }));
+		context.subscriptions.push(workspaceIndex.onStatus(status => { void publishStatus(status); }),
+			onEmbeddingStatusChanged(status => {
+				currentView?.webview.postMessage({ type: 'modelStatus', status });
+			}));
 	}
 	resolveWebviewView(view: vscode.WebviewView): void {
 		currentView = view;
@@ -45,6 +48,7 @@ async function handleMessage(msg: Record<string, unknown>): Promise<void> {
 	switch (msg.type) {
 		case 'webviewReady': {
 			currentView?.webview.postMessage({ type: 'init', hasIndex: true, hasWorkspace: folders.length > 0, autoBuild: false });
+			currentView?.webview.postMessage({ type: 'modelStatus', status: getEmbeddingStatus() });
 			if (folders.length) { await publishStatus(); }
 			if (pendingAutoBuild) { pendingAutoBuild = false; await buildAll(); }
 			break;

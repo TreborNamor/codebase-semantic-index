@@ -22,10 +22,15 @@ body{
 }
 header{display:flex;align-items:center;justify-content:space-between;gap:8px}
 h2{font-size:1.05em;font-weight:700;white-space:nowrap;color:var(--csi-cyan)}
+.status-pills{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
 .badge{
 	padding:2px 8px;border-radius:10px;font-size:.8em;white-space:nowrap;
 	background:var(--csi-cyan);color:var(--csi-ink);font-weight:600;box-shadow:0 0 12px #53c7f533
 }
+.badge.model.idle{background:var(--csi-line);color:var(--vscode-editor-foreground,#d4d4d4);box-shadow:none}
+.badge.model.loading{background:var(--csi-violet);color:#1a1027;box-shadow:0 0 12px #bd9cff33}
+.badge.model.ok{background:var(--csi-green);color:#092019;box-shadow:0 0 12px #4fdda833}
+.badge.model.err{background:var(--csi-coral);color:#2a0d0c;box-shadow:0 0 12px #ff827d33}
 .badge.ok{background:var(--csi-green);color:#092019;box-shadow:0 0 12px #4fdda833}
 .badge.err{background:var(--csi-coral);color:#2a0d0c;box-shadow:0 0 12px #ff827d33}
 button{
@@ -81,7 +86,10 @@ button:not(:disabled):hover{background:var(--csi-cyan-hover);box-shadow:0 0 14px
 
 <header>
 	<h2>&#x1F50D; Codebase Semantic Index</h2>
-	<span id="badge" class="badge">Initializing&#x2026;</span>
+	<div class="status-pills" aria-label="Model and index status">
+		<span id="model-badge" class="badge model idle">Model not loaded</span>
+		<span id="badge" class="badge">Initializing&#x2026;</span>
+	</div>
 </header>
 
 <div id="actions">
@@ -103,7 +111,7 @@ button:not(:disabled):hover{background:var(--csi-cyan-hover);box-shadow:0 0 14px
 	<div class="search-row">
 		<input id="search-input" type="text" placeholder="Describe what you&#x2019;re looking for&#x2026;"
 			autocomplete="off" spellcheck="false" />
-		<button id="btn-search">Search</button>
+		<button id="btn-search" disabled>Search</button>
 	</div>
 	<div id="results"></div>
 </div>
@@ -113,6 +121,7 @@ const vscode = acquireVsCodeApi();
 
 // DOM refs
 const badge         = document.getElementById('badge');
+const modelBadge    = document.getElementById('model-badge');
 const btnBuild      = document.getElementById('btn-build');
 const progressSec   = document.getElementById('progress-section');
 const progressLabel = document.getElementById('progress-label');
@@ -129,11 +138,36 @@ const embedFill     = document.getElementById('embed-fill');
 const embedDetail   = document.getElementById('embed-detail');
 // Runtime state
 let isIndexing = false;
+let hasWorkspace = false;
+let modelReady = false;
+let indexBusy = false;
 
 // UI helpers
 function setBadge(text, cls) {
 	badge.textContent = text;
 	badge.className = 'badge' + (cls ? ' ' + cls : '');
+}
+function updateActions() {
+	btnBuild.disabled = !hasWorkspace || !modelReady || isIndexing || indexBusy;
+	btnSearch.disabled = !modelReady || isIndexing;
+}
+function setModelStatus(status) {
+	modelReady = status?.state === 'ready';
+	if (modelReady) {
+		modelBadge.textContent = 'Model ready';
+		modelBadge.className = 'badge model ok';
+	} else if (status?.state === 'loading') {
+		modelBadge.textContent = 'Loading Qwen…';
+		modelBadge.className = 'badge model loading';
+	} else if (status?.state === 'error') {
+		modelBadge.textContent = 'Model error';
+		modelBadge.className = 'badge model err';
+		searchStatus.textContent = status.message || 'Qwen could not be loaded.';
+	} else {
+		modelBadge.textContent = 'Model not loaded';
+		modelBadge.className = 'badge model idle';
+	}
+	updateActions();
 }
 function showProgress(label, pct, detail) {
 	progressSec.style.display = 'flex';
@@ -158,7 +192,7 @@ function hideEmbedProgress() { embedSec.style.display = 'none'; }
 // Search — delegate to extension host (embedding happens in the worker panel)
 async function runSearch() {
 	const query = searchInput.value.trim();
-	if (!query) return;
+	if (!query || !modelReady) return;
 
 	btnSearch.disabled = true;
 	setBadge('Searching\u2026');
@@ -214,18 +248,24 @@ window.addEventListener('message', async e => {
 	const msg = e.data;
 	switch (msg.type) {
 		case 'init':
-			btnBuild.disabled = msg.hasWorkspace === false;
+			hasWorkspace = msg.hasWorkspace !== false;
 			btnBuild.textContent = msg.hasIndex ? 'Rebuild Index' : 'Build Index';
 			setBadge(msg.hasIndex ? 'Loading index\u2026' : 'No index yet');
+			updateActions();
 			if (msg.autoBuild) setTimeout(() => btnBuild.click(), 50);
 			break;
 
 		case 'loadIndex':
+			indexBusy = !!msg.busy;
 			setBadge(msg.busy ? 'Updating index...' : msg.chunkCount + ' chunks indexed', msg.message ? 'err' : 'ok');
 			searchStatus.textContent = msg.message || 'Results are verified against current workspace files and unsaved edits.';
-			btnBuild.disabled = false;
 			btnBuild.textContent = 'Rebuild Index';
 			showSearch();
+			updateActions();
+			break;
+
+		case 'modelStatus':
+			setModelStatus(msg.status);
 			break;
 
 		case 'triggerBuild':
@@ -233,6 +273,7 @@ window.addEventListener('message', async e => {
 			break;
 
 		case 'modelLoading':
+			setModelStatus({ state: 'loading' });
 			showProgress('Loading Qwen embedding model…', 0,
 				msg.mode === 'search' ? 'Semantic search will begin when the model is ready.' : 'Indexing will begin when the model is ready.');
 			setBadge('Loading model…');
@@ -273,11 +314,12 @@ window.addEventListener('message', async e => {
 		case 'indexSaved':
 			hideProgress();
 			hideEmbedProgress();
+			indexBusy = false;
 			setBadge(msg.meta.chunkCount + ' chunks indexed', 'ok');
 			isIndexing = false;
-			btnBuild.disabled = false;
 			btnBuild.textContent = 'Rebuild Index';
 			showSearch();
+			updateActions();
 			searchInput.focus();
 			break;
 
@@ -287,14 +329,14 @@ window.addEventListener('message', async e => {
 			displayResults(msg.results);
 			searchStatus.textContent = msg.message || 'Verified current workspace results.';
 			setBadge(msg.results.length > 0 ? msg.results.length + ' results' : 'No results', msg.results.length > 0 ? 'ok' : '');
-			btnSearch.disabled = false;
+			updateActions();
 			break;
 
 		case 'searchError':
 			hideProgress();
 			hideEmbedProgress();
 			setBadge('Search error: ' + msg.message, 'err');
-			btnSearch.disabled = false;
+			updateActions();
 			break;
 
 		case 'incrementalUpdate':
@@ -304,18 +346,19 @@ window.addEventListener('message', async e => {
 		case 'error':
 			hideProgress();
 			hideEmbedProgress();
+			indexBusy = false;
 			setBadge('Error: ' + msg.message, 'err');
 			isIndexing = false;
-			btnBuild.disabled = false;
+			updateActions();
 			break;
 	}
 });
 
 // Button / keyboard wiring
 btnBuild.addEventListener('click', () => {
-	if (isIndexing) return;
+	if (isIndexing || !modelReady || !hasWorkspace) return;
 	isIndexing = true;
-	btnBuild.disabled = true;
+	updateActions();
 	searchSec.style.display = 'none';
 	resultsEl.innerHTML = '';
 	vscode.postMessage({ type: 'buildIndex' });
