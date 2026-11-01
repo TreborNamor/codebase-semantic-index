@@ -10,6 +10,7 @@ function setup() {
   const batches = [];
   let intercept;
   const embeddings = {
+    isEmbeddingModelReady: () => true,
     async waitForEmbeddingReady() {},
     async embedBatch(chunks) {
       batches.push(chunks);

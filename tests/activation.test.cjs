@@ -17,7 +17,7 @@ function setup(git) {
   const roots = [vscode.Uri.parse('file:///workspace'), vscode.Uri.parse('vscode-remote://other-host/workspace')];
   roots.forEach((root, index) => env.addRoot(root, `root-${index}`));
   const scheduled = [], documentsChanged = [], documentsClosed = [], commands = new Map(), tools = [];
-  let synced = 0, workerStarted = 0, panelOpened = 0, built = 0;
+  let synced = 0, panelOpened = 0, built = 0;
   const disposable = () => ({ dispose() {} });
   const lifecycle = {
     onDidChangeWorkspaceFolders: event(), onDidChangeConfiguration: event(),
@@ -41,19 +41,18 @@ function setup(git) {
     vscode,
     './panelManager': { CodebaseSemanticIndexViewProvider: PanelProvider, openPanel: async () => { panelOpened++; }, buildAll: async () => { built++; } },
     './promptRefiner': { PromptRefinementViewProvider: class {}, openPromptRefiner: async () => { panelOpened++; } },
-    './embeddingWorker': { initEmbeddingWorker: () => workerStarted++, CodebaseSemanticIndexWorkerProvider: WorkerProvider },
+    './embeddingWorker': { CodebaseSemanticIndexWorkerProvider: WorkerProvider },
     './searchTool': { CodebaseSemanticIndexTool: class {} }, './workspaceIndex': { workspaceIndex },
   });
   const context = { subscriptions: [] };
   activate(context);
   return { ...env, roots, scheduled, documentsChanged, documentsClosed, lifecycle, watcher, context, commands, tools,
-    get synced() { return synced; }, get workerStarted() { return workerStarted; }, get panelOpened() { return panelOpened; }, get built() { return built; } };
+    get synced() { return synced; }, get panelOpened() { return panelOpened; }, get built() { return built; } };
 }
 
 test('activation registers the existing tool and commands and reconciles roots on startup/add/remove', async () => {
   const e = setup();
   assert.equal(e.synced, 1);
-  assert.equal(e.workerStarted, 1);
   assert.equal(e.tools[0].name, 'codebase_semantic_index_search');
   assert.ok(e.context.subscriptions.includes(e.watcher));
   e.addRoot(e.vscode.Uri.parse('file:///second'), 'second');

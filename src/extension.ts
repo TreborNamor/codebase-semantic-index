@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { CodebaseSemanticIndexViewProvider, openPanel, buildAll } from './panelManager';
-import { initEmbeddingWorker, CodebaseSemanticIndexWorkerProvider } from './embeddingWorker';
+import { CodebaseSemanticIndexWorkerProvider } from './embeddingWorker';
 import { CodebaseSemanticIndexTool } from './searchTool';
 import { workspaceIndex } from './workspaceIndex';
 import { isInsideWorkspaceRoot } from './utils';
@@ -23,7 +23,6 @@ export function activate(context: vscode.ExtensionContext): void {
 		vscode.commands.registerCommand('codebaseSemanticIndex.buildIndex', async () => { await openPanel(); await buildAll(); }),
 		vscode.lm.registerTool('codebase_semantic_index_search', new CodebaseSemanticIndexTool()),
 	);
-	initEmbeddingWorker();
 	const scheduleAll = () => { for (const folder of vscode.workspace.workspaceFolders ?? []) { workspaceIndex.schedule(folder.uri); } };
 	const changed = (uri: vscode.Uri) => {
 		// Persisted cache writes must not trigger a perpetual rebuild loop.

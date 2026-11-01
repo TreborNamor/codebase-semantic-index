@@ -6,6 +6,8 @@ import workerHtml from './webview/worker.html';
 let workerView: vscode.WebviewView | undefined;
 let isModelReady = false;
 let modelFailure: Error | undefined;
+let workerPageReady = false;
+let modelLoadRequested = false;
 let requestSequence = 0;
 let lastIndexStats: Record<string, unknown> | null = null;
 
@@ -48,6 +50,12 @@ function postControlMessage(message: Record<string, unknown>): void {
 	try {
 		void workerView?.webview.postMessage(message).then(undefined, () => undefined);
 	} catch { /* A disposed webview must not prevent settling pending promises. */ }
+}
+
+function requestModelLoad(): void {
+	if (isModelReady || modelFailure) { return; }
+	modelLoadRequested = true;
+	if (workerPageReady) { postControlMessage({ type: 'loadModel' }); }
 }
 
 function finish(requestId: string, error?: Error, vectors?: Float32Array): void {
@@ -116,7 +124,9 @@ function decodeAndValidate(encoded: unknown, count: number): Float32Array {
 
 function handleMessage(msg: Record<string, unknown>): void {
 	if (msg.type === 'workerWebviewReady') {
+		workerPageReady = true;
 		if (lastIndexStats) { postControlMessage(lastIndexStats); }
+		if (modelLoadRequested) { postControlMessage({ type: 'loadModel' }); }
 		return;
 	}
 	if (msg.type === 'modelReady') {
@@ -173,6 +183,8 @@ export class CodebaseSemanticIndexWorkerProvider implements vscode.WebviewViewPr
 		workerView = view;
 		isModelReady = false;
 		modelFailure = undefined;
+		workerPageReady = false;
+		modelLoadRequested = false;
 		resetModelReadyGate();
 		const distUri = vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'web');
 		const webview = view.webview;
@@ -188,6 +200,8 @@ export class CodebaseSemanticIndexWorkerProvider implements vscode.WebviewViewPr
 			workerView = undefined;
 			isModelReady = false;
 			modelFailure = undefined;
+			workerPageReady = false;
+			modelLoadRequested = false;
 		});
 		const config = JSON.stringify({ model: MODEL_NAME, revision: MODEL_REVISION, dimension: VECTOR_DIM, queryInstruction: QUERY_INSTRUCTION }).replace(/</g, '\\u003c');
 		webview.html = workerHtml
@@ -209,6 +223,7 @@ export async function waitForEmbeddingReady(token?: vscode.CancellationToken): P
 	if (token?.isCancellationRequested) { throw new vscode.CancellationError(); }
 	if (modelFailure) { throw modelFailure; }
 	if (isModelReady) { return; }
+	requestModelLoad();
 	await new Promise<void>((resolve, reject) => {
 		let settled = false;
 		let cancellation: vscode.Disposable | undefined;
@@ -225,10 +240,6 @@ export async function waitForEmbeddingReady(token?: vscode.CancellationToken): P
 }
 
 export function isEmbeddingModelReady(): boolean { return isModelReady; }
-
-export function initEmbeddingWorker(): void {
-	void ensureWorkerView().catch(error => console.error('[Codebase Semantic Index worker]', error));
-}
 
 function requestEmbedding(
 	type: PendingRequest['type'], payload: Record<string, unknown>, expectedCount: number,

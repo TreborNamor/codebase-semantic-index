@@ -25,6 +25,7 @@ body{
 	padding:2px 8px;border-radius:10px;font-size:.8em;white-space:nowrap;
 	background:var(--csi-cyan);color:var(--csi-ink);font-weight:600;box-shadow:0 0 12px #53c7f533
 }
+.badge.idle{background:var(--csi-line);color:var(--vscode-editor-foreground,#d4d4d4);box-shadow:none}
 .badge.loading{background:var(--csi-violet);color:#1a1027;box-shadow:0 0 12px #bd9cff33}
 .badge.ok{background:var(--csi-green);color:#092019;box-shadow:0 0 12px #4fdda833}
 .badge.err{background:var(--csi-coral);color:#2a0d0c;box-shadow:0 0 12px #ff827d33}
@@ -57,7 +58,7 @@ hr{border:none;border-top:1px solid var(--csi-line)}
 <div class="header">
 	<span style="font-size:1.15em">&#x2699;&#xFE0F;</span>
 	<strong>Codebase Semantic Index Embedding Worker</strong>
-	<span id="status" class="badge">Loading model&#x2026;</span>
+	<span id="status" class="badge idle">Model not loaded</span>
 </div>
 
 <p class="desc">
@@ -116,7 +117,7 @@ let incrDeleted     = 0;
 // ---------------------------------------------------------------------------
 function setStatus(text, ok) {
 	statusEl.textContent = text;
-	statusEl.className = 'badge' + (ok === true ? ' ok' : ok === false ? ' err' : /loading|embedding/i.test(text) ? ' loading' : '');
+	statusEl.className = 'badge' + (ok === true ? ' ok' : ok === false ? ' err' : /loading|embedding/i.test(text) ? ' loading' : /not loaded/i.test(text) ? ' idle' : '');
 }
 
 function fmt(n) { return n == null ? '\u2014' : n.toLocaleString(); }
@@ -155,7 +156,10 @@ function float32ToBase64(arr) {
 // ---------------------------------------------------------------------------
 // Model initialisation
 // ---------------------------------------------------------------------------
-const modelReadyPromise = (async () => {
+let modelReadyPromise;
+function startModelLoad() {
+	if (modelReadyPromise) return modelReadyPromise;
+	modelReadyPromise = (async () => {
 	try {
 		const { pipeline, env } = await import('__TRANSFORMERS_URI__');
 
@@ -189,6 +193,8 @@ const modelReadyPromise = (async () => {
 // Model loading may fail before any request arrives. Keep its failure available
 // to requests without producing an unhandled promise rejection in the webview.
 void modelReadyPromise.catch(() => {});
+return modelReadyPromise;
+}
 
 const activeRequests = new Set();
 const cancelledRequests = new Set();
@@ -214,7 +220,7 @@ function validateVector(data) {
 function infer(text, requestId) {
 	const pending = inferenceTail.then(async () => {
 		checkCancelled(requestId);
-		const model = await modelReadyPromise;
+		const model = await startModelLoad();
 		const out = await model(text, { pooling: 'last_token', normalize: true });
 		checkCancelled(requestId);
 		return validateVector(out.data);
@@ -229,6 +235,10 @@ function infer(text, requestId) {
 window.addEventListener('message', async e => {
 	const msg = e.data;
 	switch (msg.type) {
+		case 'loadModel':
+			void startModelLoad();
+			break;
+
 		case 'cancelEmbedding':
 			if (activeRequests.has(msg.requestId)) cancelledRequests.add(msg.requestId);
 			break;

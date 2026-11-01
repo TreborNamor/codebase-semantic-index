@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { chunkDocument, chunkText, CHUNKER_VERSION, isIndexable, RawChunk } from './chunker';
-import { embedBatch, embedQuery, waitForEmbeddingReady } from './embeddingWorker';
+import { embedBatch, embedQuery, isEmbeddingModelReady, waitForEmbeddingReady } from './embeddingWorker';
 import { MODEL_NAME, MODEL_REVISION, PIPELINE_ID, VECTOR_DIM } from './embeddingConfig';
 import { hashText } from './fingerprints';
 import { INDEX_VERSION, loadIndex, saveIndex } from './indexStore';
@@ -92,7 +92,7 @@ export class WorkspaceIndexService implements vscode.Disposable {
 	}
 
 	/** Startup, checkout and settings changes reconcile actual files, never historical blobs. */
-	syncWorkspaceFolders(): void {
+	syncWorkspaceFolders(reconcile = isEmbeddingModelReady()): void {
 		const folders = vscode.workspace.workspaceFolders ?? [];
 		const active = new Set(folders.map(folder => workspaceKey(folder.uri)));
 		for (const [key, timer] of this.timers) {
@@ -104,11 +104,12 @@ export class WorkspaceIndexService implements vscode.Disposable {
 				for (const overlayKey of this.overlays.keys()) { if (overlayKey.startsWith(key + '|')) { this.overlays.delete(overlayKey); } }
 			}
 		}
-		for (const folder of folders) { this.schedule(folder.uri); }
+		if (reconcile) { for (const folder of folders) { this.schedule(folder.uri); } }
 	}
 
 	schedule(root: vscode.Uri, delay = 300): void {
-		if (!this.active(root)) { return; }
+		// File events must not initialize the large local model during editor startup.
+		if (!this.active(root) || !isEmbeddingModelReady()) { return; }
 		const key = workspaceKey(root);
 		const previous = this.timers.get(key);
 		if (previous) { clearTimeout(previous); }
@@ -281,6 +282,7 @@ export class WorkspaceIndexService implements vscode.Disposable {
 		const prefix = normalizePathPrefix(pathPrefix);
 		const statuses = new Set<string>();
 		const candidates: RetrievalCandidate[] = [];
+		const staleRoots = new Set<vscode.Uri>();
 		const folders = [...(vscode.workspace.workspaceFolders ?? [])];
 		cancelled(token);
 		for (const folder of folders) {
@@ -319,7 +321,7 @@ export class WorkspaceIndexService implements vscode.Disposable {
 				}
 			}
 			if (state.status) { statuses.add(`${folder.name}: ${state.status}`); }
-			if (stale) { statuses.add(`${folder.name}: current-file lexical fallback is active for changed/unindexed files.`); this.schedule(folder.uri); }
+			if (stale) { statuses.add(`${folder.name}: current-file lexical fallback is active for changed/unindexed files.`); staleRoots.add(folder.uri); }
 		}
 		let queryVector: Float32Array | undefined;
 		if (candidates.some(candidate => candidate.vector)) {
@@ -330,6 +332,7 @@ export class WorkspaceIndexService implements vscode.Disposable {
 			catch (error) { cancelled(token); statuses.add(`Semantic query unavailable; using current-file lexical search: ${(error as Error).message}`); }
 			finally { clearTimeout(timer); subscription?.dispose(); timeout.dispose(); }
 		}
+		for (const root of staleRoots) { this.schedule(root); }
 		cancelled(token);
 		const ranked = rankCandidates(candidates, query, queryVector, 20);
 		const verified = await this.verify(ranked, token);
