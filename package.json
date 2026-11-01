@@ -2,7 +2,7 @@
   "name": "codebase-semantic-index",
   "displayName": "Codebase Semantic Index",
   "description": "Semantic search for your codebase using local AI embeddings. Find code by concept, not just keywords.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "publisher": "TreborNamor",
   "repository": {
     "type": "git",

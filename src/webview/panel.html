@@ -145,7 +145,11 @@ let indexBusy = false;
 // UI helpers
 function setBadge(text, cls) {
 	badge.textContent = text;
+	badge.hidden = !text;
 	badge.className = 'badge' + (cls ? ' ' + cls : '');
+}
+function setChunkCountBadge(count) {
+	setBadge(count > 0 ? count + ' chunks indexed' : '', count > 0 ? 'ok' : '');
 }
 function updateActions() {
 	btnBuild.disabled = !hasWorkspace || !modelReady || isIndexing || indexBusy;
@@ -257,7 +261,9 @@ window.addEventListener('message', async e => {
 
 		case 'loadIndex':
 			indexBusy = !!msg.busy;
-			setBadge(msg.busy ? 'Updating index...' : msg.chunkCount + ' chunks indexed', msg.message ? 'err' : 'ok');
+			if (msg.busy) setBadge('Updating index...');
+			else if (msg.message) setBadge(msg.message, 'err');
+			else setChunkCountBadge(msg.chunkCount);
 			searchStatus.textContent = msg.message || 'Results are verified against current workspace files and unsaved edits.';
 			btnBuild.textContent = 'Rebuild Index';
 			showSearch();
@@ -315,7 +321,7 @@ window.addEventListener('message', async e => {
 			hideProgress();
 			hideEmbedProgress();
 			indexBusy = false;
-			setBadge(msg.meta.chunkCount + ' chunks indexed', 'ok');
+			setChunkCountBadge(msg.meta.chunkCount);
 			isIndexing = false;
 			btnBuild.textContent = 'Rebuild Index';
 			showSearch();
@@ -340,7 +346,7 @@ window.addEventListener('message', async e => {
 			break;
 
 		case 'incrementalUpdate':
-			setBadge(msg.chunkCount + ' chunks indexed', 'ok');
+			setChunkCountBadge(msg.chunkCount);
 			break;
 
 		case 'error':
