@@ -216,6 +216,13 @@ async function ensureWorkerView(): Promise<void> {
 	if (!workerView) { await vscode.commands.executeCommand('codebase-semantic-index.worker.focus'); }
 }
 
+/** Create the worker webview at startup so its status container remains visible.
+ *  Loading the ONNX runtime and model stays lazy until an embedding is requested.
+ */
+export function initEmbeddingWorker(): void {
+	void ensureWorkerView().catch(error => console.error('[Codebase Semantic Index worker]', error));
+}
+
 /** Wait until the worker has loaded the model before starting any index reconciliation. */
 export async function waitForEmbeddingReady(token?: vscode.CancellationToken): Promise<void> {
 	if (token?.isCancellationRequested) { throw new vscode.CancellationError(); }
