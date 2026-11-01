@@ -75,8 +75,10 @@ button:not(:disabled):hover{background:var(--vscode-button-hoverBackground,#1177
 	color:var(--vscode-editor-foreground,#d4d4d4);opacity:.8
 }
 .no-results{color:var(--vscode-descriptionForeground,#888);font-size:.9em;padding:8px 0}
-#prompt-refiner{border:1px solid var(--vscode-panel-border,#454545);border-radius:4px;padding:10px;display:flex;flex-direction:column;gap:8px}
-#prompt-refiner h3{font-size:1em}
+#prompt-refiner{border:1px solid var(--vscode-panel-border,#454545);border-radius:4px}
+#prompt-refiner>summary{cursor:pointer;padding:9px 10px;font-size:.95em;font-weight:600;list-style-position:inside}
+#prompt-refiner>summary:focus-visible{outline:1px solid var(--vscode-focusBorder,#007fd4);outline-offset:-2px}
+.refiner-content{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}
 #prompt-refiner label{font-size:.9em;font-weight:600}
 #prompt-refiner textarea{width:100%;min-height:110px;resize:vertical;padding:8px;font:inherit;line-height:1.45;background:var(--vscode-input-background,#3c3c3c);color:var(--vscode-input-foreground,#d4d4d4);border:1px solid var(--vscode-input-border,#555);border-radius:2px}
 #prompt-refiner textarea:focus{outline:1px solid var(--vscode-focusBorder,#007fd4)}
@@ -92,27 +94,6 @@ button:not(:disabled):hover{background:var(--vscode-button-hoverBackground,#1177
 	<h2>&#x1F50D; Codebase Semantic Index</h2>
 	<span id="badge" class="badge">Initializing&#x2026;</span>
 </header>
-
-<section id="prompt-refiner" aria-labelledby="refiner-title">
-	<h3 id="refiner-title">Prompt refiner</h3>
-	<p class="refiner-note">Clarify your draft before sending it to your coding agent. Each refinement uses a separate Copilot model request containing only your draft and rewriting instructions.</p>
-	<label for="prompt-draft">Your draft</label>
-	<textarea id="prompt-draft" maxlength="12000" placeholder="Write what you want the coding agent to do..."></textarea>
-	<div class="refiner-actions">
-		<button id="btn-refine" disabled>Refine Prompt</button>
-		<button id="btn-cancel-refine" class="secondary" hidden>Cancel</button>
-		<button id="btn-refiner-model" class="secondary">Change model</button>
-	</div>
-	<p id="refiner-model" class="refiner-note">Model: choose on first refinement</p>
-	<label for="prompt-refined">Revised prompt (review and edit)</label>
-	<textarea id="prompt-refined" maxlength="16000" placeholder="Your revised prompt will appear here..."></textarea>
-	<div class="refiner-actions">
-		<button id="btn-insert-prompt" disabled title="Replace Copilot's current input with this prompt without submitting it">Insert into Copilot</button>
-		<button id="btn-copy-prompt" class="secondary" disabled>Copy</button>
-	</div>
-	<p class="refiner-note">Insert replaces Copilot's current draft. It does not send the prompt or change your coding agent's model. Drafts are saved locally in this view.</p>
-	<p id="refiner-status" class="refiner-note" role="status" aria-live="polite"></p>
-</section>
 
 <div id="actions">
 	<button id="btn-build" disabled>Build Index</button>
@@ -137,6 +118,29 @@ button:not(:disabled):hover{background:var(--vscode-button-hoverBackground,#1177
 	</div>
 	<div id="results"></div>
 </div>
+
+<details id="prompt-refiner" aria-labelledby="refiner-title">
+	<summary id="refiner-title">Prompt refiner</summary>
+	<div class="refiner-content">
+		<p class="refiner-note">Clarify your draft before sending it to your coding agent. Each refinement uses a separate Copilot model request containing only your draft and rewriting instructions.</p>
+		<label for="prompt-draft">Your draft</label>
+		<textarea id="prompt-draft" maxlength="12000" placeholder="Write what you want the coding agent to do..."></textarea>
+		<div class="refiner-actions">
+			<button id="btn-refine" disabled>Refine Prompt</button>
+			<button id="btn-cancel-refine" class="secondary" hidden>Cancel</button>
+			<button id="btn-refiner-model" class="secondary">Change model</button>
+		</div>
+		<p id="refiner-model" class="refiner-note">Model: choose on first refinement</p>
+		<label for="prompt-refined">Revised prompt (review and edit)</label>
+		<textarea id="prompt-refined" maxlength="16000" placeholder="Your revised prompt will appear here..."></textarea>
+		<div class="refiner-actions">
+			<button id="btn-insert-prompt" disabled title="Replace Copilot's current input with this prompt without submitting it">Insert into Copilot</button>
+			<button id="btn-copy-prompt" class="secondary" disabled>Copy</button>
+		</div>
+		<p class="refiner-note">Insert replaces Copilot's current draft. It does not send the prompt or change your coding agent's model. Drafts are saved locally in this view.</p>
+		<p id="refiner-status" class="refiner-note" role="status" aria-live="polite"></p>
+	</div>
+</details>
 
 <script type="module">
 const vscode = acquireVsCodeApi();
@@ -308,6 +312,7 @@ window.addEventListener('message', async e => {
 	const msg = e.data;
 	switch (msg.type) {
 		case 'focusPromptRefiner':
+			document.getElementById('prompt-refiner').open = true;
 			document.getElementById('prompt-refiner').scrollIntoView({ block: 'start' });
 			promptDraft.focus();
 			break;
