@@ -232,6 +232,11 @@ window.addEventListener('message', async e => {
 			if (!isIndexing && !btnBuild.disabled) btnBuild.click();
 			break;
 
+		case 'modelLoading':
+			showProgress('Loading embedding model…', 0, 'Indexing will begin when the model is ready.');
+			setBadge('Loading model…');
+			break;
+
 		case 'chunkStart':
 			showProgress('Chunking files\u2026', 0, '0 / ' + msg.total);
 			setBadge('Chunking\u2026');

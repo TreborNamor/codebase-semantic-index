@@ -11,6 +11,18 @@ let lastIndexStats: Record<string, unknown> | null = null;
 
 const QUERY_TIMEOUT_MS = 60_000;
 const BATCH_IDLE_TIMEOUT_MS = 120_000;
+const MODEL_LOAD_TIMEOUT_MS = 10 * 60_000;
+
+let modelReadyPromise: Promise<void>;
+let resolveModelReady: () => void;
+let rejectModelReady: (error: Error) => void;
+
+function resetModelReadyGate(): void {
+	modelReadyPromise = new Promise<void>((resolve, reject) => { resolveModelReady = resolve; rejectModelReady = reject; });
+	// A model may fail before any request waits on this gate; status is retained in modelFailure.
+	void modelReadyPromise.catch(() => {});
+}
+resetModelReadyGate();
 
 interface PendingRequest {
 	type: 'embedQuery' | 'startEmbedding';
@@ -110,12 +122,14 @@ function handleMessage(msg: Record<string, unknown>): void {
 	if (msg.type === 'modelReady') {
 		isModelReady = true;
 		modelFailure = undefined;
+		resolveModelReady();
 		for (const requestId of requests.keys()) { dispatch(requestId); }
 		return;
 	}
 	if (msg.type === 'modelError') {
 		isModelReady = false;
 		modelFailure = new Error(`Embedding model failed to load: ${String(msg.message)}`);
+		rejectModelReady(modelFailure);
 		rejectAll(modelFailure);
 		return;
 	}
@@ -151,10 +165,15 @@ export class CodebaseSemanticIndexWorkerProvider implements vscode.WebviewViewPr
 	constructor(private readonly context: vscode.ExtensionContext) {}
 
 	public resolveWebviewView(view: vscode.WebviewView): void {
-		if (workerView && workerView !== view) { rejectAll(new Error('Embedding worker was replaced. Please retry.')); }
+		if (workerView && workerView !== view) {
+			const error = new Error('Embedding worker was replaced. Please retry.');
+			rejectModelReady(error);
+			rejectAll(error);
+		}
 		workerView = view;
 		isModelReady = false;
 		modelFailure = undefined;
+		resetModelReadyGate();
 		const distUri = vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'web');
 		const webview = view.webview;
 		webview.options = { enableScripts: true, localResourceRoots: [distUri] };
@@ -163,7 +182,9 @@ export class CodebaseSemanticIndexWorkerProvider implements vscode.WebviewViewPr
 		}, undefined, this.context.subscriptions);
 		view.onDidDispose(() => {
 			if (workerView !== view) { return; }
-			rejectAll(new Error('Codebase Semantic Index embedding worker was closed.'));
+			const error = new Error('Codebase Semantic Index embedding worker was closed.');
+			rejectModelReady(error);
+			rejectAll(error);
 			workerView = undefined;
 			isModelReady = false;
 			modelFailure = undefined;
@@ -181,6 +202,30 @@ async function ensureWorkerView(): Promise<void> {
 	if (!workerView) { await vscode.commands.executeCommand('codebase-semantic-index.worker.focus'); }
 }
 
+/** Wait until the worker has loaded the model before starting any index reconciliation. */
+export async function waitForEmbeddingReady(token?: vscode.CancellationToken): Promise<void> {
+	if (token?.isCancellationRequested) { throw new vscode.CancellationError(); }
+	await ensureWorkerView();
+	if (token?.isCancellationRequested) { throw new vscode.CancellationError(); }
+	if (modelFailure) { throw modelFailure; }
+	if (isModelReady) { return; }
+	await new Promise<void>((resolve, reject) => {
+		let settled = false;
+		let cancellation: vscode.Disposable | undefined;
+		const timer = setTimeout(() => finish(new Error('Embedding model did not finish loading within 10 minutes. Retry after checking the Embedding Worker status.')), MODEL_LOAD_TIMEOUT_MS);
+		const finish = (error?: Error) => {
+			if (settled) { return; }
+			settled = true; clearTimeout(timer); cancellation?.dispose();
+			if (error) { reject(error); } else { resolve(); }
+		};
+		cancellation = token?.onCancellationRequested(() => finish(new vscode.CancellationError()));
+		modelReadyPromise.then(() => token?.isCancellationRequested ? finish(new vscode.CancellationError()) : finish(), finish);
+	});
+	if (modelFailure) { throw modelFailure; }
+}
+
+export function isEmbeddingModelReady(): boolean { return isModelReady; }
+
 export function initEmbeddingWorker(): void {
 	void ensureWorkerView().catch(error => console.error('[Codebase Semantic Index worker]', error));
 }
@@ -195,10 +240,9 @@ function requestEmbedding(
 		const requestId = `${Date.now()}-${++requestSequence}`;
 		const request: PendingRequest = { type, payload, expectedCount, resolve, reject, onProgress, sent: false, done: 0 };
 		requests.set(requestId, request);
-		resetWatchdog(requestId);
 		request.cancellation = token?.onCancellationRequested(() => finish(requestId, new vscode.CancellationError()));
 		if (!requests.has(requestId)) { request.cancellation?.dispose(); return; }
-		void ensureWorkerView().then(() => dispatch(requestId), error => finish(requestId, asError(error)));
+		void waitForEmbeddingReady(token).then(() => dispatch(requestId), error => finish(requestId, asError(error)));
 	});
 }
 

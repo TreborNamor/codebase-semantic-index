@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { workspaceIndex, IndexStatus } from './workspaceIndex';
-import { postWorkerStatus } from './embeddingWorker';
+import { isEmbeddingModelReady, postWorkerStatus, waitForEmbeddingReady } from './embeddingWorker';
 import { candidateExcerpt } from './retrieval';
 import { isInsideWorkspaceRoot, workspaceKey } from './utils';
 import panelHtml from './webview/panel.html';
@@ -80,6 +80,10 @@ async function handleMessage(msg: Record<string, unknown>): Promise<void> {
 
 export async function buildAll(): Promise<void> {
 	try {
+		if (!isEmbeddingModelReady()) {
+			currentView?.webview.postMessage({ type: 'modelLoading' });
+			await waitForEmbeddingReady();
+		}
 		currentView?.webview.postMessage({ type: 'chunkStart', total: 1 });
 		for (const folder of vscode.workspace.workspaceFolders ?? []) { await workspaceIndex.rebuild(folder.uri, true); }
 		await publishStatus();

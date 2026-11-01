@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { chunkDocument, chunkText, CHUNKER_VERSION, isIndexable, RawChunk } from './chunker';
-import { embedBatch, embedQuery } from './embeddingWorker';
+import { embedBatch, embedQuery, waitForEmbeddingReady } from './embeddingWorker';
 import { MODEL_NAME, MODEL_REVISION, PIPELINE_ID, VECTOR_DIM } from './embeddingConfig';
 import { hashText } from './fingerprints';
 import { INDEX_VERSION, loadIndex, saveIndex } from './indexStore';
@@ -121,7 +121,12 @@ export class WorkspaceIndexService implements vscode.Disposable {
 	async rebuild(root: vscode.Uri, force = false): Promise<void> {
 		if (!this.active(root)) { return; }
 		const state = this.state(root);
-		try { await state.queue.request(force); }
+		try {
+			await state.loaded;
+			await waitForEmbeddingReady(state.cancellation.token);
+			if (!this.active(root) || state.removed) { return; }
+			await state.queue.request(force);
+		}
 		catch (error) { state.status = `Index update failed: ${(error as Error).message}. Current-file lexical search remains available.`; throw error; }
 		finally { this.emit(state); }
 	}
