@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
-import { CodebaseSemanticIndexViewProvider, openPanel, buildAll, openPromptRefiner } from './panelManager';
+import { CodebaseSemanticIndexViewProvider, openPanel, buildAll } from './panelManager';
 import { initEmbeddingWorker, CodebaseSemanticIndexWorkerProvider } from './embeddingWorker';
 import { CodebaseSemanticIndexTool } from './searchTool';
 import { workspaceIndex } from './workspaceIndex';
 import { isInsideWorkspaceRoot } from './utils';
+import { PromptRefinementViewProvider, openPromptRefiner } from './promptRefiner';
 
 interface GitRepository { state: { onDidChange(listener: () => void): vscode.Disposable } }
 interface GitApi { repositories: GitRepository[]; onDidOpenRepository(listener: (repository: GitRepository) => void): vscode.Disposable }
@@ -13,6 +14,8 @@ export function activate(context: vscode.ExtensionContext): void {
 		workspaceIndex,
 		vscode.window.registerWebviewViewProvider(CodebaseSemanticIndexViewProvider.viewType,
 			new CodebaseSemanticIndexViewProvider(context), { webviewOptions: { retainContextWhenHidden: true } }),
+		vscode.window.registerWebviewViewProvider(PromptRefinementViewProvider.viewType,
+			new PromptRefinementViewProvider(context), { webviewOptions: { retainContextWhenHidden: true } }),
 		vscode.window.registerWebviewViewProvider(CodebaseSemanticIndexWorkerProvider.viewType,
 			new CodebaseSemanticIndexWorkerProvider(context), { webviewOptions: { retainContextWhenHidden: true } }),
 		vscode.commands.registerCommand('codebaseSemanticIndex.openPanel', openPanel),

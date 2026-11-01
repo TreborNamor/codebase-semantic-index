@@ -39,7 +39,8 @@ function setup(git) {
   class WorkerProvider { static viewType = 'worker'; }
   const { activate } = loadTs('src/extension.ts', {
     vscode,
-    './panelManager': { CodebaseSemanticIndexViewProvider: PanelProvider, openPanel: async () => { panelOpened++; }, openPromptRefiner: async () => { panelOpened++; }, buildAll: async () => { built++; } },
+    './panelManager': { CodebaseSemanticIndexViewProvider: PanelProvider, openPanel: async () => { panelOpened++; }, buildAll: async () => { built++; } },
+    './promptRefiner': { PromptRefinementViewProvider: class {}, openPromptRefiner: async () => { panelOpened++; } },
     './embeddingWorker': { initEmbeddingWorker: () => workerStarted++, CodebaseSemanticIndexWorkerProvider: WorkerProvider },
     './searchTool': { CodebaseSemanticIndexTool: class {} }, './workspaceIndex': { workspaceIndex },
   });

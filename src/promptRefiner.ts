@@ -1,4 +1,9 @@
 import * as vscode from 'vscode';
+import refinerHtml from './webview/refiner.html';
+
+let currentView: vscode.WebviewView | undefined;
+let viewReady = false;
+let pendingFocus = false;
 
 export const MAX_DRAFT_CHARS = 12_000;
 export const MAX_REWRITE_CHARS = 16_000;
@@ -158,4 +163,42 @@ export class PromptRefinerController implements vscode.Disposable {
 	}
 
 	dispose(): void { this.disposed = true; this.active?.cancellation.cancel(); }
+}
+
+export class PromptRefinementViewProvider implements vscode.WebviewViewProvider {
+	public static readonly viewType = 'prompt-refinement.panel';
+	constructor(private readonly context: vscode.ExtensionContext) {}
+
+	resolveWebviewView(view: vscode.WebviewView): void {
+		currentView = view;
+		viewReady = false;
+		view.webview.options = { enableScripts: true };
+		view.webview.html = refinerHtml.replace('__CSP_SOURCE__', view.webview.cspSource);
+		const controller = new PromptRefinerController(this.context.globalState, message => { void view.webview.postMessage(message); });
+		this.context.subscriptions.push(controller);
+		view.webview.onDidReceiveMessage(message => {
+			if (message.type === 'webviewReady') {
+				viewReady = true;
+				controller.ready();
+				if (pendingFocus) { pendingFocus = false; void view.webview.postMessage({ type: 'focusPromptRefiner' }); }
+				return;
+			}
+			void controller.handle(message).catch(error => {
+				void view.webview.postMessage({ type: 'refinerError', message: refinementError(error) });
+			});
+		}, undefined, this.context.subscriptions);
+		view.onDidDispose(() => {
+			controller.dispose();
+			if (currentView === view) { currentView = undefined; viewReady = false; }
+		});
+	}
+}
+
+export async function openPromptRefiner(): Promise<void> {
+	pendingFocus = true;
+	await vscode.commands.executeCommand('prompt-refinement.panel.focus');
+	if (currentView && viewReady) {
+		pendingFocus = false;
+		void currentView.webview.postMessage({ type: 'focusPromptRefiner' });
+	}
 }

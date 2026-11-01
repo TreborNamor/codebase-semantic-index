@@ -41,7 +41,7 @@ async function main() {
         postMessage: message => { void window.sendToExtension(message); },
       });
     });
-    const html = fs.readFileSync(path.join(__dirname, '../src/webview/panel.html'), 'utf8').replace('__CSP_SOURCE__', "'self'");
+    const html = fs.readFileSync(path.join(__dirname, '../src/webview/refiner.html'), 'utf8').replace('__CSP_SOURCE__', "'self'");
     await page.setContent(html);
     const draft = page.getByLabel('Your draft', { exact: true });
     const result = page.getByLabel('Revised prompt (review and edit)', { exact: true });
@@ -54,7 +54,7 @@ async function main() {
     assert.equal(await draft.inputValue(), draftSent);
     await result.fill('Reviewed rewrite for the coding agent.');
     await page.getByRole('button', { name: 'Insert into Copilot', exact: true }).click();
-    await page.waitForFunction(() => document.getElementById('refiner-status').textContent.includes('unsent draft'));
+    await page.waitForFunction(() => document.getElementById('status').textContent.includes('unsent draft'));
     assert.deepEqual(commands, [['workbench.action.chat.open', { query: 'Reviewed rewrite for the coding agent.', isPartialQuery: true }]]);
     await page.waitForTimeout(50);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'narrow sidebar must not overflow horizontally');

@@ -49,6 +49,11 @@
           "id": "codebase-semantic-index",
           "title": "Codebase Semantic Index",
           "icon": "media/icon.svg"
+        },
+        {
+          "id": "prompt-refinement",
+          "title": "Prompt Refinement",
+          "icon": "media/prompt-refinement.svg"
         }
       ]
     },
@@ -64,12 +69,19 @@
           "id": "codebase-semantic-index.worker",
           "name": "Embedding Worker"
         }
+      ],
+      "prompt-refinement": [
+        {
+          "type": "webview",
+          "id": "prompt-refinement.panel",
+          "name": "Prompt Refinement"
+        }
       ]
     },
     "commands": [
       {
         "command": "codebaseSemanticIndex.refinePrompt",
-        "title": "Codebase Semantic Index: Refine Prompt",
+        "title": "Prompt Refinement: Open Composer",
         "icon": "$(wand)"
       },
       {
@@ -85,7 +97,7 @@
       "view/title": [
         {
           "command": "codebaseSemanticIndex.refinePrompt",
-          "when": "view == codebase-semantic-index.panel",
+          "when": "view == prompt-refinement.panel",
           "group": "navigation"
         }
       ]

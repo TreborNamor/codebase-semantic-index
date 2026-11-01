@@ -4,12 +4,9 @@ import { postWorkerStatus } from './embeddingWorker';
 import { candidateExcerpt } from './retrieval';
 import { isInsideWorkspaceRoot, workspaceKey } from './utils';
 import panelHtml from './webview/panel.html';
-import { PromptRefinerController } from './promptRefiner';
 
 let currentView: vscode.WebviewView | undefined;
 let pendingAutoBuild = false;
-let pendingRefinerFocus = false;
-let panelReady = false;
 
 export class CodebaseSemanticIndexViewProvider implements vscode.WebviewViewProvider {
 	public static readonly viewType = 'codebase-semantic-index.panel';
@@ -18,23 +15,14 @@ export class CodebaseSemanticIndexViewProvider implements vscode.WebviewViewProv
 	}
 	resolveWebviewView(view: vscode.WebviewView): void {
 		currentView = view;
-		panelReady = false;
 		view.webview.options = { enableScripts: true };
 		view.webview.html = panelHtml.replace('__CSP_SOURCE__', view.webview.cspSource);
-		const refiner = new PromptRefinerController(this.context.globalState, message => { void view.webview.postMessage(message); });
-		this.context.subscriptions.push(refiner);
 		view.webview.onDidReceiveMessage(msg => { void (async () => {
-			if (await refiner.handle(msg)) { return; }
-			if (msg.type === 'webviewReady') {
-				panelReady = true;
-				refiner.ready();
-				if (pendingRefinerFocus) { pendingRefinerFocus = false; void view.webview.postMessage({ type: 'focusPromptRefiner' }); }
-			}
 			await handleMessage(msg);
 		})().catch(error => {
 			view.webview.postMessage({ type: 'error', message: (error as Error).message });
 		}); }, undefined, this.context.subscriptions);
-		view.onDidDispose(() => { refiner.dispose(); if (currentView === view) { currentView = undefined; panelReady = false; } });
+		view.onDidDispose(() => { if (currentView === view) { currentView = undefined; } });
 	}
 }
 
@@ -51,11 +39,6 @@ async function publishStatus(changed?: IndexStatus): Promise<void> {
 
 export async function openPanel(): Promise<void> { await vscode.commands.executeCommand('codebase-semantic-index.panel.focus'); }
 export function setPendingAutoBuild(value: boolean): void { pendingAutoBuild = value; }
-export async function openPromptRefiner(): Promise<void> {
-	pendingRefinerFocus = true;
-	await openPanel();
-	if (currentView && panelReady) { pendingRefinerFocus = false; void currentView.webview.postMessage({ type: 'focusPromptRefiner' }); }
-}
 
 async function handleMessage(msg: Record<string, unknown>): Promise<void> {
 	const folders = vscode.workspace.workspaceFolders ?? [];

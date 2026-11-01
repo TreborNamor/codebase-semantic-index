@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy"
+	content="default-src 'none'; script-src 'unsafe-inline' __CSP_SOURCE__; style-src 'unsafe-inline';">
+<title>Prompt Refinement</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--vscode-font-family,sans-serif);font-size:var(--vscode-font-size,13px);background:var(--vscode-editor-background,#1e1e1e);color:var(--vscode-editor-foreground,#d4d4d4);padding:14px;display:flex;flex-direction:column;gap:10px}
+header{display:flex;align-items:center;gap:8px}
+h2{font-size:1.05em;font-weight:600}
+label{font-size:.9em;font-weight:600}
+textarea{width:100%;min-height:110px;resize:vertical;padding:8px;font:inherit;line-height:1.45;background:var(--vscode-input-background,#3c3c3c);color:var(--vscode-input-foreground,#d4d4d4);border:1px solid var(--vscode-input-border,#555);border-radius:2px}
+textarea:focus{outline:1px solid var(--vscode-focusBorder,#007fd4)}
+button{background:var(--vscode-button-background,#0e639c);color:var(--vscode-button-foreground,#fff);border:none;padding:5px 12px;cursor:pointer;border-radius:2px;font:inherit;font-size:.9em}
+button:disabled{opacity:.45;cursor:default}
+button:not(:disabled):hover{background:var(--vscode-button-hoverBackground,#1177bb)}
+.secondary{background:var(--vscode-button-secondaryBackground,#3a3d41);color:var(--vscode-button-secondaryForeground,#fff)}
+.actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.note{font-size:.85em;line-height:1.45;color:var(--vscode-descriptionForeground,#888)}
+#status.error{color:var(--vscode-errorForeground,#f48771)}
+</style>
+</head>
+<body>
+<header><h2>Prompt Refinement</h2></header>
+<p class="note">Clarify your draft before sending it to your coding agent. Each refinement uses a separate Copilot model request containing only your draft and rewriting instructions.</p>
+<label for="prompt-draft">Your draft</label>
+<textarea id="prompt-draft" maxlength="12000" placeholder="Write what you want the coding agent to do..."></textarea>
+<div class="actions">
+	<button id="btn-refine" disabled>Refine Prompt</button>
+	<button id="btn-cancel" class="secondary" hidden>Cancel</button>
+	<button id="btn-model" class="secondary">Change model</button>
+</div>
+<p id="model-name" class="note">Model: choose on first refinement</p>
+<label for="prompt-refined">Revised prompt (review and edit)</label>
+<textarea id="prompt-refined" maxlength="16000" placeholder="Your revised prompt will appear here..."></textarea>
+<div class="actions">
+	<button id="btn-insert" disabled title="Replace Copilot's current input with this prompt without submitting it">Insert into Copilot</button>
+	<button id="btn-copy" class="secondary" disabled>Copy</button>
+</div>
+<p class="note">Insert replaces Copilot's current draft. It does not send the prompt or change your coding agent's model. Drafts are saved locally in this view.</p>
+<p id="status" class="note" role="status" aria-live="polite"></p>
+<script>
+const vscode = acquireVsCodeApi();
+const draft = document.getElementById('prompt-draft');
+const revised = document.getElementById('prompt-refined');
+const refineButton = document.getElementById('btn-refine');
+const cancelButton = document.getElementById('btn-cancel');
+const modelButton = document.getElementById('btn-model');
+const insertButton = document.getElementById('btn-insert');
+const copyButton = document.getElementById('btn-copy');
+const status = document.getElementById('status');
+const modelName = document.getElementById('model-name');
+let sequence = 0;
+let requestId;
+let busy = false;
+const saved = vscode.getState() || {};
+draft.value = typeof saved.draft === 'string' ? saved.draft.slice(0,12000) : '';
+revised.value = typeof saved.refined === 'string' ? saved.refined.slice(0,16000) : '';
+
+function saveDraft() { vscode.setState({ draft: draft.value, refined: revised.value }); }
+function say(text, error = false) { status.textContent = text; status.classList.toggle('error', error); }
+function updateButtons() {
+	refineButton.disabled = busy || !draft.value.trim();
+	cancelButton.hidden = !busy;
+	modelButton.disabled = busy;
+	insertButton.disabled = busy || !revised.value.trim();
+	copyButton.disabled = busy || !revised.value.trim();
+}
+function cancel() {
+	if (requestId) vscode.postMessage({ type: 'cancelRefinement', requestId });
+	requestId = undefined;
+	busy = false;
+	updateButtons();
+}
+draft.addEventListener('input', () => {
+	const wasBusy = busy;
+	cancel();
+	revised.value = '';
+	saveDraft(); updateButtons();
+	say(wasBusy ? 'Draft changed; previous refinement cancelled.' : '');
+});
+revised.addEventListener('input', () => { cancel(); saveDraft(); updateButtons(); });
+refineButton.addEventListener('click', () => {
+	if (busy || !draft.value.trim()) return;
+	requestId = String(++sequence); busy = true; updateButtons();
+	say('Refining your draft...');
+	vscode.postMessage({ type: 'refinePrompt', requestId, draft: draft.value });
+});
+cancelButton.addEventListener('click', () => { cancel(); say('Refinement cancelled. Your draft has been kept.'); });
+modelButton.addEventListener('click', () => {
+	if (busy) return;
+	requestId = String(++sequence); busy = true; updateButtons();
+	say('Choose a Copilot model for refinement.');
+	vscode.postMessage({ type: 'chooseRefinerModel', requestId });
+});
+insertButton.addEventListener('click', () => {
+	if (!busy && revised.value.trim()) vscode.postMessage({ type: 'insertCopilotDraft', text: revised.value });
+});
+copyButton.addEventListener('click', async () => {
+	try { await navigator.clipboard.writeText(revised.value); say('Revised prompt copied.'); }
+	catch { say('Could not access the clipboard. Select the revised prompt and copy it manually.', true); }
+});
+window.addEventListener('message', event => {
+	const message = event.data;
+	switch (message.type) {
+		case 'focusPromptRefiner': draft.focus(); break;
+		case 'refinerModel': modelName.textContent = 'Model: ' + message.modelName; break;
+		case 'refinerResult':
+			if (message.requestId !== requestId) break;
+			requestId = undefined; busy = false; revised.value = message.text;
+			saveDraft(); updateButtons(); say('Review the revised prompt, then insert it into Copilot when ready.'); break;
+		case 'refinerFinished':
+			if (message.requestId !== requestId) break;
+			requestId = undefined; busy = false; updateButtons(); say('Ready. Your draft has been kept.'); break;
+		case 'refinerError':
+			if (message.requestId && message.requestId !== requestId) break;
+			requestId = undefined; busy = false; updateButtons(); say(message.message, true); break;
+		case 'refinerInserted': say('Inserted into Copilot as an unsent draft. Review it there and press Send when ready.'); break;
+	}
+});
+updateButtons();
+vscode.postMessage({ type: 'webviewReady' });
+</script>
+</body>
+</html>

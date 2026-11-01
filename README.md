@@ -44,7 +44,7 @@ Each refinement is a separate model request subject to your Copilot access and u
 
 Typing does not trigger a model call. Drafts and reviewed text are saved locally as webview state. Refinements are limited to 12,000 draft characters and a 4,096-token input budget (or the model's smaller limit), with a 90-second timeout and bounded response handling. Editing the draft or clicking **Cancel** cancels the active refinement; late responses cannot replace a newer draft. Failures keep your original draft.
 
-The composer lives in this extension's panel because VS Code does not expose a public API to read Copilot's unsent input or add a custom button directly inside it. Insertion uses the VS Code chat command with `isPartialQuery: true`; if insertion is unavailable in your host, use **Copy**. Refinement does not require a workspace index or the semantic-search tool to be enabled.
+The composer lives in its own **Prompt Refinement** Activity Bar container, separate from **Codebase Semantic Index** (which contains the index panel and embedding worker). VS Code does not expose a public API to read Copilot's unsent input or add a custom button directly inside it. Insertion uses the VS Code chat command with `isPartialQuery: true`; if insertion is unavailable in your host, use **Copy**. Refinement does not require a workspace index or the semantic-search tool to be enabled.
 
 ## How current-file retrieval works
 

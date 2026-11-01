@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 
 function view(saved = {}) {
-  const html = fs.readFileSync(require.resolve('../src/webview/panel.html'), 'utf8');
+  const html = fs.readFileSync(require.resolve('../src/webview/refiner.html'), 'utf8');
   const elements = new Map(), messages = [], copied = [];
   let persisted = saved, receive;
   for (const match of html.matchAll(/id="([^"]+)"/g)) {
@@ -23,7 +23,7 @@ function view(saved = {}) {
     acquireVsCodeApi: () => ({ getState: () => persisted, setState: value => { persisted = value; }, postMessage: value => messages.push(value) }),
     setTimeout, clearTimeout, console,
   };
-  vm.runInNewContext(html.match(/<script type="module">([\s\S]*?)<\/script>/)[1], context);
+  vm.runInNewContext(html.match(/<script>([\s\S]*?)<\/script>/)[1], context);
   return { elements, messages, copied, get state() { return persisted; }, send: data => receive({ data }),
     get: id => elements.get(id), input: async (id, value) => { elements.get(id).value = value; await elements.get(id).fire('input'); } };
 }
@@ -78,6 +78,6 @@ test('failure preserves the original draft and view state restores editable cont
   await e.send({ type: 'refinerError', requestId: request.requestId, message: 'Quota exhausted; draft kept.' });
   assert.equal(e.get('prompt-draft').value, 'saved draft');
   assert.equal(e.get('prompt-refined').value, 'saved rewrite');
-  assert.match(e.get('refiner-status').textContent, /Quota/);
+  assert.match(e.get('status').textContent, /Quota/);
   assert.equal(e.get('btn-refine').disabled, false);
 });

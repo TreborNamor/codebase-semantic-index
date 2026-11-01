@@ -75,17 +75,6 @@ button:not(:disabled):hover{background:var(--vscode-button-hoverBackground,#1177
 	color:var(--vscode-editor-foreground,#d4d4d4);opacity:.8
 }
 .no-results{color:var(--vscode-descriptionForeground,#888);font-size:.9em;padding:8px 0}
-#prompt-refiner{border:1px solid var(--vscode-panel-border,#454545);border-radius:4px}
-#prompt-refiner>summary{cursor:pointer;padding:9px 10px;font-size:.95em;font-weight:600;list-style-position:inside}
-#prompt-refiner>summary:focus-visible{outline:1px solid var(--vscode-focusBorder,#007fd4);outline-offset:-2px}
-.refiner-content{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}
-#prompt-refiner label{font-size:.9em;font-weight:600}
-#prompt-refiner textarea{width:100%;min-height:110px;resize:vertical;padding:8px;font:inherit;line-height:1.45;background:var(--vscode-input-background,#3c3c3c);color:var(--vscode-input-foreground,#d4d4d4);border:1px solid var(--vscode-input-border,#555);border-radius:2px}
-#prompt-refiner textarea:focus{outline:1px solid var(--vscode-focusBorder,#007fd4)}
-.refiner-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.refiner-note{font-size:.85em;line-height:1.45;color:var(--vscode-descriptionForeground,#888)}
-.secondary{background:var(--vscode-button-secondaryBackground,#3a3d41);color:var(--vscode-button-secondaryForeground,#fff)}
-#refiner-status.error{color:var(--vscode-errorForeground,#f48771)}
 </style>
 </head>
 <body>
@@ -119,29 +108,6 @@ button:not(:disabled):hover{background:var(--vscode-button-hoverBackground,#1177
 	<div id="results"></div>
 </div>
 
-<details id="prompt-refiner" aria-labelledby="refiner-title">
-	<summary id="refiner-title">Prompt refiner</summary>
-	<div class="refiner-content">
-		<p class="refiner-note">Clarify your draft before sending it to your coding agent. Each refinement uses a separate Copilot model request containing only your draft and rewriting instructions.</p>
-		<label for="prompt-draft">Your draft</label>
-		<textarea id="prompt-draft" maxlength="12000" placeholder="Write what you want the coding agent to do..."></textarea>
-		<div class="refiner-actions">
-			<button id="btn-refine" disabled>Refine Prompt</button>
-			<button id="btn-cancel-refine" class="secondary" hidden>Cancel</button>
-			<button id="btn-refiner-model" class="secondary">Change model</button>
-		</div>
-		<p id="refiner-model" class="refiner-note">Model: choose on first refinement</p>
-		<label for="prompt-refined">Revised prompt (review and edit)</label>
-		<textarea id="prompt-refined" maxlength="16000" placeholder="Your revised prompt will appear here..."></textarea>
-		<div class="refiner-actions">
-			<button id="btn-insert-prompt" disabled title="Replace Copilot's current input with this prompt without submitting it">Insert into Copilot</button>
-			<button id="btn-copy-prompt" class="secondary" disabled>Copy</button>
-		</div>
-		<p class="refiner-note">Insert replaces Copilot's current draft. It does not send the prompt or change your coding agent's model. Drafts are saved locally in this view.</p>
-		<p id="refiner-status" class="refiner-note" role="status" aria-live="polite"></p>
-	</div>
-</details>
-
 <script type="module">
 const vscode = acquireVsCodeApi();
 
@@ -161,70 +127,6 @@ const embedSec      = document.getElementById('embed-section');
 const embedLabel    = document.getElementById('embed-label');
 const embedFill     = document.getElementById('embed-fill');
 const embedDetail   = document.getElementById('embed-detail');
-const promptDraft   = document.getElementById('prompt-draft');
-const promptRefined = document.getElementById('prompt-refined');
-const btnRefine     = document.getElementById('btn-refine');
-const btnCancelRefine = document.getElementById('btn-cancel-refine');
-const btnRefinerModel = document.getElementById('btn-refiner-model');
-const btnInsertPrompt = document.getElementById('btn-insert-prompt');
-const btnCopyPrompt = document.getElementById('btn-copy-prompt');
-const refinerStatus = document.getElementById('refiner-status');
-const refinerModel = document.getElementById('refiner-model');
-let refinerSequence = 0;
-let refinerRequest;
-let refinerBusy = false;
-const savedDraft = vscode.getState() || {};
-promptDraft.value = typeof savedDraft.draft === 'string' ? savedDraft.draft.slice(0,12000) : '';
-promptRefined.value = typeof savedDraft.refined === 'string' ? savedDraft.refined.slice(0,16000) : '';
-
-function saveDraft() { vscode.setState({ draft: promptDraft.value, refined: promptRefined.value }); }
-function refinerMessage(text, error = false) { refinerStatus.textContent = text; refinerStatus.classList.toggle('error', error); }
-function updateRefinerButtons() {
-	btnRefine.disabled = refinerBusy || !promptDraft.value.trim();
-	btnCancelRefine.hidden = !refinerBusy;
-	btnRefinerModel.disabled = refinerBusy;
-	btnInsertPrompt.disabled = refinerBusy || !promptRefined.value.trim();
-	btnCopyPrompt.disabled = refinerBusy || !promptRefined.value.trim();
-}
-function cancelRefiner() {
-	if (refinerRequest) vscode.postMessage({ type: 'cancelRefinement', requestId: refinerRequest });
-	refinerRequest = undefined;
-	refinerBusy = false;
-	updateRefinerButtons();
-}
-promptDraft.addEventListener('input', () => {
-	const wasBusy = refinerBusy;
-	cancelRefiner();
-	promptRefined.value = '';
-	saveDraft(); updateRefinerButtons();
-	refinerMessage(wasBusy ? 'Draft changed; previous refinement cancelled.' : '');
-});
-promptRefined.addEventListener('input', () => { cancelRefiner(); saveDraft(); updateRefinerButtons(); });
-btnRefine.addEventListener('click', () => {
-	if (refinerBusy || !promptDraft.value.trim()) return;
-	refinerRequest = String(++refinerSequence);
-	refinerBusy = true; updateRefinerButtons();
-	refinerMessage('Refining your draft...');
-	vscode.postMessage({ type: 'refinePrompt', requestId: refinerRequest, draft: promptDraft.value });
-});
-btnCancelRefine.addEventListener('click', () => { cancelRefiner(); refinerMessage('Refinement cancelled. Your draft has been kept.'); });
-btnRefinerModel.addEventListener('click', () => {
-	if (refinerBusy) return;
-	refinerRequest = String(++refinerSequence);
-	refinerBusy = true; updateRefinerButtons();
-	refinerMessage('Choose a Copilot model for refinement.');
-	vscode.postMessage({ type: 'chooseRefinerModel', requestId: refinerRequest });
-});
-btnInsertPrompt.addEventListener('click', () => {
-	if (refinerBusy || !promptRefined.value.trim()) return;
-	vscode.postMessage({ type: 'insertCopilotDraft', text: promptRefined.value });
-});
-btnCopyPrompt.addEventListener('click', async () => {
-	try { await navigator.clipboard.writeText(promptRefined.value); refinerMessage('Revised prompt copied.'); }
-	catch { refinerMessage('Could not access the clipboard. Select the revised prompt and copy it manually.', true); }
-});
-updateRefinerButtons();
-
 // Runtime state
 let isIndexing = false;
 
@@ -311,35 +213,6 @@ function displayResults(results) {
 window.addEventListener('message', async e => {
 	const msg = e.data;
 	switch (msg.type) {
-		case 'focusPromptRefiner':
-			document.getElementById('prompt-refiner').open = true;
-			document.getElementById('prompt-refiner').scrollIntoView({ block: 'start' });
-			promptDraft.focus();
-			break;
-		case 'refinerModel':
-			refinerModel.textContent = 'Model: ' + msg.modelName;
-			break;
-		case 'refinerResult':
-			if (msg.requestId !== refinerRequest) break;
-			refinerRequest = undefined; refinerBusy = false;
-			promptRefined.value = msg.text;
-			saveDraft(); updateRefinerButtons();
-			refinerMessage('Review the revised prompt, then insert it into Copilot when ready.');
-			break;
-		case 'refinerFinished':
-			if (msg.requestId !== refinerRequest) break;
-			refinerRequest = undefined; refinerBusy = false; updateRefinerButtons();
-			refinerMessage('Ready. Your draft has been kept.');
-			break;
-		case 'refinerError':
-			if (msg.requestId && msg.requestId !== refinerRequest) break;
-			refinerRequest = undefined; refinerBusy = false; updateRefinerButtons();
-			refinerMessage(msg.message, true);
-			break;
-		case 'refinerInserted':
-			refinerMessage('Inserted into Copilot as an unsent draft. Review it there and press Send when ready.');
-			break;
-
 		case 'init':
 			btnBuild.disabled = msg.hasWorkspace === false;
 			btnBuild.textContent = msg.hasIndex ? 'Rebuild Index' : 'Build Index';
