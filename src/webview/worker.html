@@ -83,6 +83,7 @@ hr{border:none;border-top:1px solid var(--vscode-widget-border,#454545)}
 
 <script type="module">
 const vscode = acquireVsCodeApi();
+const EMBEDDING_CONFIG = __EMBEDDING_CONFIG__;
 
 // DOM refs
 const statusEl   = document.getElementById('status');
@@ -152,48 +153,24 @@ const modelReadyPromise = (async () => {
 	try {
 		const { pipeline, env } = await import('__TRANSFORMERS_URI__');
 
-		// Detect WebGPU availability
-		let device = 'wasm';
-		if (typeof navigator !== 'undefined' && navigator.gpu) {
-			try {
-				const adapter = await navigator.gpu.requestAdapter();
-				if (adapter) { device = 'webgpu'; }
-			} catch { /* WebGPU not available */ }
-		}
+		// q8 integer operators use the stable WASM path. A failed WebGPU session
+		// can poison the runtime's initialization chain, making a retry unsafe.
+		// Runtime code is shipped with the extension; only model assets download.
+		env.backends.onnx.wasm.wasmPaths = {
+			wasm: '__WASM_DIR_URI__ort-wasm-simd-threaded.asyncify.wasm',
+			mjs:  '__WASM_DIR_URI__ort-wasm-simd-threaded.asyncify.mjs',
+		};
+		// Webviews are not consistently cross-origin isolated. Avoid worker-thread
+		// startup failures while retaining inference outside the extension host.
+		env.backends.onnx.wasm.numThreads = 1;
+		setStatus('Loading model (WASM q8)…');
+		const extractor = await pipeline(
+			'feature-extraction',
+			EMBEDDING_CONFIG.model,
+			{ dtype: 'q8', device: 'wasm', revision: EMBEDDING_CONFIG.revision },
+		);
 
-		if (device === 'wasm') {
-			env.backends.onnx.wasm.wasmPaths = {
-				wasm: '__WASM_DIR_URI__ort-wasm-simd-threaded.asyncify.wasm',
-				mjs:  '__WASM_DIR_URI__ort-wasm-simd-threaded.asyncify.mjs',
-			};
-		}
-
-		setStatus('Loading model (' + (device === 'webgpu' ? 'WebGPU' : 'WASM') + ')…');
-
-		let extractor;
-		try {
-			extractor = await pipeline(
-				'feature-extraction',
-				'onnx-community/Qwen3-Embedding-0.6B-ONNX',
-				{ dtype: device === 'webgpu' ? 'fp32' : 'q8', device },
-			);
-		} catch (gpuErr) {
-			if (device !== 'webgpu') { throw gpuErr; }
-			// WebGPU failed — fall back to WASM
-			device = 'wasm';
-			env.backends.onnx.wasm.wasmPaths = {
-				wasm: '__WASM_DIR_URI__ort-wasm-simd-threaded.asyncify.wasm',
-				mjs:  '__WASM_DIR_URI__ort-wasm-simd-threaded.asyncify.mjs',
-			};
-			setStatus('Loading model (WASM fallback)…');
-			extractor = await pipeline(
-				'feature-extraction',
-				'onnx-community/Qwen3-Embedding-0.6B-ONNX',
-				{ dtype: 'q8', device: 'wasm' },
-			);
-		}
-
-		sBackend.textContent = device === 'webgpu' ? 'WebGPU' : 'WASM';
+		sBackend.textContent = 'WASM q8';
 		vscode.postMessage({ type: 'modelReady' });
 		setStatus('Model ready', true);
 		return extractor;
@@ -203,6 +180,42 @@ const modelReadyPromise = (async () => {
 		throw err;
 	}
 })();
+// Model loading may fail before any request arrives. Keep its failure available
+// to requests without producing an unhandled promise rejection in the webview.
+void modelReadyPromise.catch(() => {});
+
+const activeRequests = new Set();
+const cancelledRequests = new Set();
+let inferenceTail = Promise.resolve();
+
+function checkCancelled(requestId) {
+	if (cancelledRequests.has(requestId)) throw new Error('Embedding request cancelled.');
+}
+
+function validateVector(data) {
+	if (!data || data.length !== EMBEDDING_CONFIG.dimension) throw new Error('Unexpected embedding dimension.');
+	let norm = 0;
+	for (const value of data) {
+		if (!Number.isFinite(value)) throw new Error('Embedding contains non-finite values.');
+		norm += value * value;
+	}
+	if (Math.abs(Math.sqrt(norm) - 1) > 0.02) throw new Error('Embedding is zero or is not normalized.');
+	return new Float32Array(data);
+}
+
+// Serialize individual model calls rather than whole batches. Queries can run
+// between chunks, and concurrent batches cannot invoke the extractor together.
+function infer(text, requestId) {
+	const pending = inferenceTail.then(async () => {
+		checkCancelled(requestId);
+		const model = await modelReadyPromise;
+		const out = await model(text, { pooling: 'last_token', normalize: true });
+		checkCancelled(requestId);
+		return validateVector(out.data);
+	});
+	inferenceTail = pending.then(() => undefined, () => undefined);
+	return pending;
+}
 
 // ---------------------------------------------------------------------------
 // Message handler (extension -> worker)
@@ -210,6 +223,9 @@ const modelReadyPromise = (async () => {
 window.addEventListener('message', async e => {
 	const msg = e.data;
 	switch (msg.type) {
+		case 'cancelEmbedding':
+			if (activeRequests.has(msg.requestId)) cancelledRequests.add(msg.requestId);
+			break;
 
 		// Index stats pushed from extension host ----------------------------------
 		case 'indexStats': {
@@ -227,9 +243,10 @@ window.addEventListener('message', async e => {
 
 		// Batch-embed all chunks for an index build -------------------------------
 		case 'startEmbedding': {
-			const model  = await modelReadyPromise;
+			const requestId = msg.requestId;
+			activeRequests.add(requestId);
 			const chunks = msg.chunks;
-			const DIM    = 1024;
+			const DIM    = EMBEDDING_CONFIG.dimension;
 			const total  = chunks.length;
 			const allVec = new Float32Array(total * DIM);
 
@@ -239,12 +256,13 @@ window.addEventListener('message', async e => {
 			embedSec.style.display = 'flex';
 			const startTime = Date.now();
 
+			try {
 			for (let i = 0; i < total; i++) {
 				try {
-					const out = await model(chunks[i].text, { pooling: 'last_token', normalize: true });
-					allVec.set(out.data, i * DIM);
-				} catch {
-					// leave as zero vector
+					allVec.set(await infer(chunks[i].text, requestId), i * DIM);
+				} catch (err) {
+					throw new Error('Embedding failed for ' + (chunks[i].file || 'unknown file') +
+						' (chunk ' + (i + 1) + '/' + total + '): ' + err.message);
 				}
 				const done = i + 1;
 				const pct  = (done / total) * 100;
@@ -256,28 +274,42 @@ window.addEventListener('message', async e => {
 					: '';
 				embedDetail.textContent = done.toLocaleString() + ' / ' + total.toLocaleString()
 					+ '  \u2014  ' + (chunks[i].file ?? '') + etaStr;
-				vscode.postMessage({ type: 'embedProgress', done, total, file: chunks[i].file ?? '' });
+				vscode.postMessage({ type: 'embedProgress', requestId, done, total, file: chunks[i].file ?? '' });
 			}
-
-			embedSec.style.display = 'none';
-			vscode.postMessage({ type: 'embeddingsDone', vectors: float32ToBase64(allVec) });
+			checkCancelled(requestId);
+			vscode.postMessage({ type: 'embeddingsDone', requestId, vectors: float32ToBase64(allVec) });
+			} catch (err) {
+				if (!cancelledRequests.has(requestId)) {
+					setStatus(err.message, false);
+					vscode.postMessage({ type: 'embeddingError', requestId, message: err.message });
+				}
+			} finally {
+				embedSec.style.display = 'none';
+				activeRequests.delete(requestId);
+				cancelledRequests.delete(requestId);
+			}
 			break;
 		}
 
 		// Single-query embed for search -------------------------------------------
 		case 'embedQuery': {
 			const { requestId, query } = msg;
+			activeRequests.add(requestId);
 			tsLastSearch = Date.now();
 			sSearch.textContent = '\u201c' + query.slice(0, 50) + (query.length > 50 ? '\u2026' : '') + '\u201d';
 			try {
-				const model = await modelReadyPromise;
-				const out   = await model('Instruct: Given a natural language description of code, retrieve the code that implements it\nQuery:' + query, { pooling: 'last_token', normalize: true });
+				const out = await infer(EMBEDDING_CONFIG.queryInstruction + query, requestId);
 				vscode.postMessage({
 					type: 'queryEmbedding', requestId,
-					vector: float32ToBase64(new Float32Array(out.data)),
+					vector: float32ToBase64(out),
 				});
 			} catch (err) {
-				vscode.postMessage({ type: 'embedQueryError', requestId, message: err.message });
+				if (!cancelledRequests.has(requestId)) {
+					vscode.postMessage({ type: 'embedQueryError', requestId, message: err.message });
+				}
+			} finally {
+				activeRequests.delete(requestId);
+				cancelledRequests.delete(requestId);
 			}
 			break;
 		}

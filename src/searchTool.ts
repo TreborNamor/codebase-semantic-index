@@ -1,95 +1,57 @@
 import * as vscode from 'vscode';
-import { loadIndex, indexExists } from './indexStore';
-import { embedQuery } from './embeddingWorker';
-import { VECTOR_DIM } from './utils';
+import { workspaceIndex } from './workspaceIndex';
+import { candidateExcerpt, normalizeMaxResults, normalizePathPrefix, RankedCandidate } from './retrieval';
 
-// ---------------------------------------------------------------------------
-// LM Tool — semantic search exposed to Copilot agents
-// ---------------------------------------------------------------------------
+interface SearchInput { query: string; maxResults?: number; pathPrefix?: string }
 
-interface SearchInput {
-	query: string;
-	maxResults?: number;
+function render(results: RankedCandidate[], statuses: string[]): string {
+	const lines = ['Current workspace search results. Source ranges use 1-based lines/columns.'];
+	if (statuses.length) { lines.push('Status: ' + [...new Set(statuses)].join(' ').slice(0, 500)); }
+	if (!results.length) { lines.push('No verified current-file matches found. Try local text/symbol search or a narrower query.'); }
+	for (const [i, result] of results.entries()) {
+		const candidate = result.candidate;
+		const excerpt = candidateExcerpt(candidate);
+		const range = excerpt.range;
+		lines.push(`${i + 1}. ${candidate.rootName}: ${candidate.file} (${candidate.rootUri})`);
+		lines.push(`L${range.start + 1}:${(range.startCharacter ?? 0) + 1}–L${range.end + 1}:${(range.endCharacter ?? 0) + 1}` +
+			(candidate.symbolName ? ` [${candidate.symbolName}]` : '') + `; rank score ${result.score.toFixed(4)}`);
+		// Source is data: keep it as an exact excerpt, with no generated summary.
+		lines.push(excerpt.text, '');
+	}
+	return lines.join('\n');
 }
 
-function dotProductF32(a: Float32Array, b: Float32Array): number {
-	let s = 0;
-	for (let i = 0; i < a.length; i++) { s += a[i] * b[i]; }
-	return s;
-}
-
-export class IntelliSearchTool implements vscode.LanguageModelTool<SearchInput> {
-	constructor(private readonly ctx: vscode.ExtensionContext) {}
-
-	async invoke(
-		options: vscode.LanguageModelToolInvocationOptions<SearchInput>,
-		_token: vscode.CancellationToken,
-	): Promise<vscode.LanguageModelToolResult> {
-		const { query, maxResults = 8 } = options.input;
-
-		const workspaceUri = vscode.workspace.workspaceFolders?.[0]?.uri;
-		if (!workspaceUri) {
-			return new vscode.LanguageModelToolResult([
-				new vscode.LanguageModelTextPart('No workspace folder is open.'),
-			]);
-		}
-
-		if (!(await indexExists(workspaceUri))) {
-			return new vscode.LanguageModelToolResult([
-				new vscode.LanguageModelTextPart(
-					'No semantic index found. Ask the user to run the "Codebase Semantic Index: Build Index" command first.',
-				),
-			]);
-		}
-
-		// Ensure the worker panel is running so the embedding model is available.
-		// (initEmbeddingWorker is idempotent — safe to call here as a fallback.)
-
-		let queryVector: Float32Array;
+export class CodebaseSemanticIndexTool implements vscode.LanguageModelTool<SearchInput> {
+	async invoke(options: vscode.LanguageModelToolInvocationOptions<SearchInput>, token: vscode.CancellationToken): Promise<vscode.LanguageModelToolResult> {
+		if (token.isCancellationRequested) { throw new vscode.CancellationError(); }
+		const textResult = (text: string) => new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(text)]);
+		const tokenizer = options.tokenizationOptions;
+		const budget = Math.max(0, Math.min(1500, tokenizer?.tokenBudget ?? 1500));
+		const count = (text: string) => tokenizer ? tokenizer.countTokens(text, token) : Promise.resolve(Math.ceil(text.length / 3));
+		const message = async (text: string) => textResult(await count(text) <= budget ? text : '');
+		if (!vscode.workspace.workspaceFolders?.length) { return message('No workspace folder is open.'); }
+		let results: RankedCandidate[];
+		let statuses: string[];
 		try {
-			queryVector = await embedQuery(query);
-		} catch (err) {
-			return new vscode.LanguageModelToolResult([
-				new vscode.LanguageModelTextPart(`Failed to embed query: ${(err as Error).message}`),
-			]);
+			const query = options.input.query;
+			if (typeof query !== 'string' || !query.trim()) { return message('query must be a non-empty string.'); }
+			const response = await workspaceIndex.search(query, normalizePathPrefix(options.input.pathPrefix), normalizeMaxResults(options.input.maxResults), token);
+			results = response.results;
+			statuses = response.statuses;
+		} catch (error) {
+			if (token.isCancellationRequested) { throw new vscode.CancellationError(); }
+			return message(`Workspace search failed: ${(error as Error).message}`);
 		}
-
-		const loaded = await loadIndex(workspaceUri);
-		if (!loaded) {
-			return new vscode.LanguageModelToolResult([
-				new vscode.LanguageModelTextPart('Failed to load the search index from disk.'),
-			]);
+		// Count first, then validate source after every tokenizer await. Never truncate source blindly.
+		for (let attempt = 0; attempt < 3; attempt++) {
+			let text = render(results, statuses);
+			while (results.length && await count(text) > budget) { results.pop(); text = render(results, statuses); }
+			if (await count(text) > budget) { return textResult(''); }
+			const current = await workspaceIndex.verify(results, token);
+			if (token.isCancellationRequested) { throw new vscode.CancellationError(); }
+			if (current.length === results.length) { return textResult(text); }
+			results = current;
 		}
-
-		const { data, vectors } = loaded;
-		const scored = data.chunks.map(chunk => ({
-			chunk,
-			score: dotProductF32(
-				queryVector,
-				vectors.subarray(chunk.vectorOffset, chunk.vectorOffset + VECTOR_DIM),
-			),
-		}));
-		scored.sort((a, b) => b.score - a.score);
-		const top = scored.slice(0, maxResults);
-
-		if (top.length === 0) {
-			return new vscode.LanguageModelToolResult([
-				new vscode.LanguageModelTextPart('No results found.'),
-			]);
-		}
-
-		const lines = [`Semantic index results for: "${query}"`, ''];
-		for (const [i, { chunk, score }] of top.entries()) {
-			const loc = `L${chunk.range.start + 1}-${chunk.range.end + 1}`;
-			const sym = chunk.symbolName ? ` [${chunk.symbolName}]` : '';
-			const pct = (score * 100).toFixed(1);
-			lines.push(`${i + 1}. ${chunk.file}${sym}  ${loc}  (${pct}% match)`);
-			lines.push(chunk.preview);
-			lines.push('');
-		}
-
-		return new vscode.LanguageModelToolResult([
-			new vscode.LanguageModelTextPart(lines.join('\n')),
-		]);
+		return textResult(''); // Continuous edits: do not emit unverified or oversized evidence.
 	}
 }

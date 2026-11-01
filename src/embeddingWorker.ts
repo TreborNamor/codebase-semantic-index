@@ -1,222 +1,224 @@
 import * as vscode from 'vscode';
 import { base64ToFloat32 } from './utils';
+import { MODEL_NAME, MODEL_REVISION, QUERY_INSTRUCTION, VECTOR_DIM } from './embeddingConfig';
 import workerHtml from './webview/worker.html';
 
-// ---------------------------------------------------------------------------
-// State
-// ---------------------------------------------------------------------------
 let workerView: vscode.WebviewView | undefined;
 let isModelReady = false;
-
-/** Held so the view can be recreated automatically if the user closes it. */
-let savedContext: vscode.ExtensionContext | undefined;
-
-/** Resolves when the worker WebviewView has been resolved by VS Code. */
-let resolveViewReady: (() => void) | undefined;
-let viewReadyPromise: Promise<void> = new Promise(r => { resolveViewReady = r; });
-
-/** Last index stats message — re-sent whenever the panel is recreated. */
+let modelFailure: Error | undefined;
+let requestSequence = 0;
 let lastIndexStats: Record<string, unknown> | null = null;
 
-/** Pending single-query embed requests, keyed by requestId. */
-const pendingQueryRequests = new Map<string, {
-	query:   string;
-	resolve: (v: Float32Array) => void;
-	reject:  (e: Error) => void;
-}>();
+const QUERY_TIMEOUT_MS = 60_000;
+const BATCH_IDLE_TIMEOUT_MS = 120_000;
 
-/** Callbacks for the currently in-progress batch embedding. */
-let batchCallbacks: {
-	onProgress: (done: number, total: number, file: string) => void;
-	resolve:    (v: Float32Array) => void;
-	reject:     (e: Error) => void;
-} | undefined;
+interface PendingRequest {
+	type: 'embedQuery' | 'startEmbedding';
+	payload: Record<string, unknown>;
+	expectedCount: number;
+	resolve: (vectors: Float32Array) => void;
+	reject: (error: Error) => void;
+	onProgress?: (done: number, total: number, file: string) => void;
+	timer?: ReturnType<typeof setTimeout>;
+	cancellation?: vscode.Disposable;
+	sent: boolean;
+	done: number;
+}
 
-// ---------------------------------------------------------------------------
-// Sidebar WebviewView provider
-// ---------------------------------------------------------------------------
-export class IntelliSearchWorkerProvider implements vscode.WebviewViewProvider {
-	public static readonly viewType = 'intellisearch.worker';
+/** Every reply is tied to its request, including batches from different roots. */
+const requests = new Map<string, PendingRequest>();
 
-	constructor(private readonly _context: vscode.ExtensionContext) {
-		savedContext = _context;
+function asError(error: unknown): Error {
+	return error instanceof Error ? error : new Error(String(error));
+}
+
+function postControlMessage(message: Record<string, unknown>): void {
+	try {
+		void workerView?.webview.postMessage(message).then(undefined, () => undefined);
+	} catch { /* A disposed webview must not prevent settling pending promises. */ }
+}
+
+function finish(requestId: string, error?: Error, vectors?: Float32Array): void {
+	const request = requests.get(requestId);
+	if (!request) { return; }
+	requests.delete(requestId);
+	clearTimeout(request.timer);
+	request.cancellation?.dispose();
+	if (error) {
+		if (request.sent) {
+			postControlMessage({ type: 'cancelEmbedding', requestId });
+		}
+		request.reject(error);
+	} else {
+		request.resolve(vectors!);
 	}
+}
 
-	public resolveWebviewView(
-		webviewView: vscode.WebviewView,
-		_resolveContext: vscode.WebviewViewResolveContext,
-		_token: vscode.CancellationToken,
-	): void {
-		workerView = webviewView;
+function rejectAll(error: Error): void {
+	for (const requestId of [...requests.keys()]) { finish(requestId, error); }
+}
 
-		const distWebUri = vscode.Uri.joinPath(this._context.extensionUri, 'dist', 'web');
-		webviewView.webview.options = {
-			enableScripts: true,
-			localResourceRoots: [distWebUri],
-		};
+function resetWatchdog(requestId: string): void {
+	const request = requests.get(requestId);
+	if (!request) { return; }
+	clearTimeout(request.timer);
+	const timeout = request.type === 'embedQuery' ? QUERY_TIMEOUT_MS : BATCH_IDLE_TIMEOUT_MS;
+	request.timer = setTimeout(() => finish(requestId, new Error(
+		request.type === 'embedQuery'
+			? 'Query embedding timed out after 60 seconds. Current-file lexical search is still available.'
+			: 'Batch embedding timed out after 120 seconds without progress. The index was not committed.',
+	)), timeout);
+}
 
-		const webview = webviewView.webview;
-		const transformersUri = webview.asWebviewUri(vscode.Uri.joinPath(distWebUri, 'transformers.min.js')).toString();
-		const wasmDirUri      = webview.asWebviewUri(distWebUri).toString() + '/';
+function dispatch(requestId: string): void {
+	const request = requests.get(requestId);
+	if (!request || request.sent || !workerView || !isModelReady) { return; }
+	request.sent = true;
+	resetWatchdog(requestId);
+	try {
+		void workerView.webview.postMessage({ ...request.payload, type: request.type, requestId }).then(
+			delivered => { if (!delivered) { finish(requestId, new Error('Embedding worker could not receive the request.')); } },
+			error => finish(requestId, asError(error)),
+		);
+	} catch (error) { finish(requestId, asError(error)); }
+}
 
+function decodeAndValidate(encoded: unknown, count: number): Float32Array {
+	if (typeof encoded !== 'string') { throw new Error('Embedding worker returned an invalid vector payload.'); }
+	const vectors = base64ToFloat32(encoded);
+	if (vectors.length !== count * VECTOR_DIM) {
+		throw new Error(`Embedding dimension mismatch: expected ${count * VECTOR_DIM} values, received ${vectors.length}.`);
+	}
+	for (let i = 0; i < count; i++) {
+		let norm = 0;
+		for (let j = i * VECTOR_DIM; j < (i + 1) * VECTOR_DIM; j++) {
+			if (!Number.isFinite(vectors[j])) { throw new Error(`Embedding ${i + 1} contains a non-finite value.`); }
+			norm += vectors[j] * vectors[j];
+		}
+		if (Math.abs(Math.sqrt(norm) - 1) > 0.02) {
+			throw new Error(`Embedding ${i + 1} is zero or is not normalized.`);
+		}
+	}
+	return vectors;
+}
+
+function handleMessage(msg: Record<string, unknown>): void {
+	if (msg.type === 'workerWebviewReady') {
+		if (lastIndexStats) { postControlMessage(lastIndexStats); }
+		return;
+	}
+	if (msg.type === 'modelReady') {
+		isModelReady = true;
+		modelFailure = undefined;
+		for (const requestId of requests.keys()) { dispatch(requestId); }
+		return;
+	}
+	if (msg.type === 'modelError') {
+		isModelReady = false;
+		modelFailure = new Error(`Embedding model failed to load: ${String(msg.message)}`);
+		rejectAll(modelFailure);
+		return;
+	}
+	const requestId = typeof msg.requestId === 'string' ? msg.requestId : '';
+	const request = requests.get(requestId);
+	if (!request || !request.sent) { return; }
+	if (msg.type === 'embedProgress' && request.type === 'startEmbedding') {
+		const done = Number(msg.done);
+		if (!Number.isInteger(done) || done < request.done || done > request.expectedCount || msg.total !== request.expectedCount) {
+			finish(requestId, new Error('Embedding worker returned invalid batch progress.'));
+			return;
+		}
+		request.done = done;
+		resetWatchdog(requestId);
+		try { request.onProgress?.(done, request.expectedCount, String(msg.file ?? '')); }
+		catch (error) { finish(requestId, asError(error)); }
+		return;
+	}
+	if (msg.type === 'embedQueryError' || msg.type === 'embeddingError') {
+		finish(requestId, new Error(String(msg.message ?? 'Embedding failed.')));
+		return;
+	}
+	if ((msg.type === 'queryEmbedding' && request.type === 'embedQuery') ||
+		(msg.type === 'embeddingsDone' && request.type === 'startEmbedding')) {
+		try {
+			finish(requestId, undefined, decodeAndValidate(msg.type === 'queryEmbedding' ? msg.vector : msg.vectors, request.expectedCount));
+		} catch (error) { finish(requestId, asError(error)); }
+	}
+}
+
+export class CodebaseSemanticIndexWorkerProvider implements vscode.WebviewViewProvider {
+	public static readonly viewType = 'codebase-semantic-index.worker';
+	constructor(private readonly context: vscode.ExtensionContext) {}
+
+	public resolveWebviewView(view: vscode.WebviewView): void {
+		if (workerView && workerView !== view) { rejectAll(new Error('Embedding worker was replaced. Please retry.')); }
+		workerView = view;
+		isModelReady = false;
+		modelFailure = undefined;
+		const distUri = vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'web');
+		const webview = view.webview;
+		webview.options = { enableScripts: true, localResourceRoots: [distUri] };
+		webview.onDidReceiveMessage(msg => {
+			if (workerView === view) { handleMessage(msg as Record<string, unknown>); }
+		}, undefined, this.context.subscriptions);
+		view.onDidDispose(() => {
+			if (workerView !== view) { return; }
+			rejectAll(new Error('Codebase Semantic Index embedding worker was closed.'));
+			workerView = undefined;
+			isModelReady = false;
+			modelFailure = undefined;
+		});
+		const config = JSON.stringify({ model: MODEL_NAME, revision: MODEL_REVISION, dimension: VECTOR_DIM, queryInstruction: QUERY_INSTRUCTION }).replace(/</g, '\\u003c');
 		webview.html = workerHtml
 			.replaceAll('__CSP_SOURCE__', webview.cspSource)
-			.replace('__TRANSFORMERS_URI__', transformersUri)
-			.replaceAll('__WASM_DIR_URI__', wasmDirUri);
-
-		webview.onDidReceiveMessage(handleMessage, undefined, this._context.subscriptions);
-
-		webviewView.onDidDispose(() => {
-			workerView   = undefined;
-			isModelReady = false;
-			const err = new Error('Codebase Semantic Index embedding worker was closed.');
-			for (const req of pendingQueryRequests.values()) { req.reject(err); }
-			pendingQueryRequests.clear();
-			batchCallbacks?.reject(err);
-			batchCallbacks = undefined;
-			// Reset ready promise so ensureWorkerView works after re-open.
-			viewReadyPromise = new Promise(r => { resolveViewReady = r; });
-		});
-
-		// Signal that the view is now available.
-		resolveViewReady?.();
-		resolveViewReady = undefined;
+			.replace('__TRANSFORMERS_URI__', webview.asWebviewUri(vscode.Uri.joinPath(distUri, 'transformers.min.js')).toString())
+			.replaceAll('__WASM_DIR_URI__', webview.asWebviewUri(distUri).toString() + '/')
+			.replace('__EMBEDDING_CONFIG__', config);
 	}
 }
 
-// ---------------------------------------------------------------------------
-// Initialisation
-// ---------------------------------------------------------------------------
-
-/**
- * Triggers the background embedding worker view to load.  Call once from `activate`.
- */
-export function initEmbeddingWorker(context: vscode.ExtensionContext): void {
-	savedContext = context;
-	// Focus the worker view so VS Code resolves it and the WASM model
-	// begins loading immediately, before the user opens the main panel.
-	vscode.commands.executeCommand('intellisearch.worker.focus');
-}
-
-/** Ensures the worker view exists, re-focusing it if the user closed it. */
 async function ensureWorkerView(): Promise<void> {
-	if (workerView) { return; }
-	await vscode.commands.executeCommand('intellisearch.worker.focus');
-	await viewReadyPromise;
+	if (!workerView) { await vscode.commands.executeCommand('codebase-semantic-index.worker.focus'); }
 }
 
-// ---------------------------------------------------------------------------
-// Internal message handler  (worker webview → extension)
-// ---------------------------------------------------------------------------
-function handleMessage(msg: Record<string, unknown>): void {
-	switch (msg.type) {
-
-		// Webview script finished loading — re-send cached stats if available ---
-		case 'workerWebviewReady':
-			if (lastIndexStats) {
-				workerView?.webview.postMessage(lastIndexStats);
-			}
-			break;
-
-		case 'modelReady':
-			isModelReady = true;
-			// Flush any queries that arrived before the model finished loading.
-			for (const [requestId, req] of pendingQueryRequests) {
-				workerView?.webview.postMessage({ type: 'embedQuery', requestId, query: req.query });
-			}
-			break;
-
-		case 'modelError':
-			console.error('[intellisearch worker] model load failed:', msg.message);
-			break;
-
-		case 'embedProgress':
-			batchCallbacks?.onProgress(
-				msg.done  as number,
-				msg.total as number,
-				msg.file  as string,
-			);
-			break;
-
-		case 'embeddingsDone': {
-			const cb = batchCallbacks;
-			batchCallbacks = undefined;
-			cb?.resolve(base64ToFloat32(msg.vectors as string));
-			break;
-		}
-
-		case 'queryEmbedding': {
-			const req = pendingQueryRequests.get(msg.requestId as string);
-			if (req) {
-				pendingQueryRequests.delete(msg.requestId as string);
-				req.resolve(base64ToFloat32(msg.vector as string));
-			}
-			break;
-		}
-
-		case 'embedQueryError': {
-			const req = pendingQueryRequests.get(msg.requestId as string);
-			if (req) {
-				pendingQueryRequests.delete(msg.requestId as string);
-				req.reject(new Error(msg.message as string));
-			}
-			break;
-		}
-	}
+export function initEmbeddingWorker(): void {
+	void ensureWorkerView().catch(error => console.error('[Codebase Semantic Index worker]', error));
 }
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
+function requestEmbedding(
+	type: PendingRequest['type'], payload: Record<string, unknown>, expectedCount: number,
+	onProgress?: PendingRequest['onProgress'], token?: vscode.CancellationToken,
+): Promise<Float32Array> {
+	if (token?.isCancellationRequested) { return Promise.reject(new vscode.CancellationError()); }
+	if (modelFailure && workerView) { return Promise.reject(modelFailure); }
+	return new Promise<Float32Array>((resolve, reject) => {
+		const requestId = `${Date.now()}-${++requestSequence}`;
+		const request: PendingRequest = { type, payload, expectedCount, resolve, reject, onProgress, sent: false, done: 0 };
+		requests.set(requestId, request);
+		resetWatchdog(requestId);
+		request.cancellation = token?.onCancellationRequested(() => finish(requestId, new vscode.CancellationError()));
+		if (!requests.has(requestId)) { request.cancellation?.dispose(); return; }
+		void ensureWorkerView().then(() => dispatch(requestId), error => finish(requestId, asError(error)));
+	});
+}
 
-/**
- * Embed a batch of chunks for an index build.
- * `onProgress` is called after each chunk with (done, total, file).
- */
-export async function embedBatch(
+/** Batch replies are all-or-nothing; failures never commit zero-filled vectors. */
+export function embedBatch(
 	chunks: Array<{ text: string; file: string }>,
 	onProgress: (done: number, total: number, file: string) => void,
+	token?: vscode.CancellationToken,
 ): Promise<Float32Array> {
-	await ensureWorkerView();
-	return new Promise<Float32Array>((resolve, reject) => {
-		batchCallbacks = { onProgress, resolve, reject };
-		workerView!.webview.postMessage({ type: 'startEmbedding', chunks });
-	});
+	if (!chunks.length) {
+		return token?.isCancellationRequested ? Promise.reject(new vscode.CancellationError()) : Promise.resolve(new Float32Array());
+	}
+	return requestEmbedding('startEmbedding', { chunks }, chunks.length, onProgress, token);
 }
 
-/**
- * Send index stats or any status message to the worker panel's UI.
- * The message is cached and re-delivered if the panel is recreated.
- */
+export function embedQuery(query: string, token?: vscode.CancellationToken): Promise<Float32Array> {
+	return requestEmbedding('embedQuery', { query }, 1, undefined, token);
+}
+
 export function postWorkerStatus(msg: Record<string, unknown>): void {
 	lastIndexStats = msg;
-	workerView?.webview.postMessage(msg);
-}
-
-/**
- * Embed a single search query.  Queued automatically if the model is still
- * loading; times out after 60 s.
- */
-export async function embedQuery(query: string): Promise<Float32Array> {
-	await ensureWorkerView();
-	return new Promise<Float32Array>((resolve, reject) => {
-		const requestId = Math.random().toString(36).slice(2);
-		const timer = setTimeout(() => {
-			pendingQueryRequests.delete(requestId);
-			reject(new Error(
-				'Embedding timed out after 60 s. The model may still be loading — try again shortly.',
-			));
-		}, 60_000);
-
-		pendingQueryRequests.set(requestId, {
-			query,
-			resolve: (v) => { clearTimeout(timer); resolve(v); },
-			reject:  (e) => { clearTimeout(timer); reject(e); },
-		});
-
-		if (isModelReady) {
-			workerView!.webview.postMessage({ type: 'embedQuery', requestId, query });
-		}
-		// else: flushed automatically when modelReady fires
-	});
+	postControlMessage(msg);
 }

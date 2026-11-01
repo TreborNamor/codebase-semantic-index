@@ -2,7 +2,7 @@
   "name": "codebase-semantic-index",
   "displayName": "Codebase Semantic Index",
   "description": "Semantic search for your codebase using local AI embeddings. Find code by concept, not just keywords.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "TreborNamor",
   "repository": {
     "type": "git",
@@ -30,6 +30,19 @@
   ],
   "browser": "./dist/web/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Codebase Semantic Index",
+      "properties": {
+        "codebaseSemanticIndex.exclude": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "default": {},
+          "description": "Additional indexing exclusion globs. Set a default generated/dependency exclusion to false to include it. Git metadata and index caches are always excluded."
+        }
+      }
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -43,30 +56,44 @@
       "codebase-semantic-index": [
         {
           "type": "webview",
-          "id": "intellisearch.panel",
+          "id": "codebase-semantic-index.panel",
           "name": "Codebase Semantic Index"
         },
         {
           "type": "webview",
-          "id": "intellisearch.worker",
+          "id": "codebase-semantic-index.worker",
           "name": "Embedding Worker"
         }
       ]
     },
     "commands": [
       {
-        "command": "intellisearch.openPanel",
+        "command": "codebaseSemanticIndex.refinePrompt",
+        "title": "Codebase Semantic Index: Refine Prompt",
+        "icon": "$(wand)"
+      },
+      {
+        "command": "codebaseSemanticIndex.openPanel",
         "title": "Codebase Semantic Index: Open Panel"
       },
       {
-        "command": "intellisearch.buildIndex",
+        "command": "codebaseSemanticIndex.buildIndex",
         "title": "Codebase Semantic Index: Build Index"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "codebaseSemanticIndex.refinePrompt",
+          "when": "view == codebase-semantic-index.panel",
+          "group": "navigation"
+        }
+      ]
+    },
     "languageModelTools": [
       {
-        "name": "intellisearch_search",
-        "toolReferenceName": "intellisearch",
+        "name": "codebase_semantic_index_search",
+        "toolReferenceName": "codebaseSemanticIndex",
         "canBeReferencedInPrompt": true,
         "tags": [
           "search",
@@ -74,7 +101,7 @@
           "semantic"
         ],
         "displayName": "Codebase Semantic Index: Semantic Search",
-        "modelDescription": "Searches the workspace codebase using semantic vector similarity (cosine distance). Use this instead of grep or reading files when you need to find code related to a concept, feature, or behaviour. Returns ranked chunks with file paths and line ranges so you can read only the most relevant sections. Requires the Codebase Semantic Index to have been built first.",
+        "modelDescription": "Search current workspace files by concept using local embeddings and exact identifier/path matching. Results are verified against current files and unsaved editor contents. Use for concept discovery; use local text/symbol search for known identifiers and read current source before editing. Supports workspace-relative path filtering. No remote repository or historical code is searched. If embeddings are unavailable, returns current-file lexical matches with an explicit status.",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -83,8 +110,15 @@
               "description": "Natural language or code description of what to find, e.g. 'cosine similarity calculation' or 'error handling for file not found'"
             },
             "maxResults": {
-              "type": "number",
-              "description": "Maximum number of results to return (default: 8)"
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "default": 5,
+              "description": "Maximum number of results to return (default: 5, range: 1–20)"
+            },
+            "pathPrefix": {
+              "type": "string",
+              "description": "Optional workspace-relative file or directory, e.g. src/services. Applied within each workspace root."
             }
           },
           "required": [
@@ -95,12 +129,19 @@
     ]
   },
   "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "typecheck": "tsc --noEmit",
+    "test:web": "webpack --config webpack.smoke.config.js && node tests/runBrowserSmoke.cjs",
+    "test:refiner-ui": "node tests/runPromptRefinerUi.cjs",
     "vscode:prepublish": "npm run package-web",
     "compile-web": "webpack",
     "watch-web": "webpack --watch",
     "package-web": "webpack --mode production --devtool hidden-source-map",
     "lint": "eslint src",
     "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=."
+  },
+  "dependencies": {
+    "ignore": "^7.0.5"
   },
   "devDependencies": {
     "@types/vscode": "^1.100.0",

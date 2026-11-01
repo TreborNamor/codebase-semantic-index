@@ -5,6 +5,12 @@ src/
 webpack.config.js
 tsconfig.json
 eslint.config.mjs
+eslint.config.cjs
+webpack.smoke.config.js
+tests/
+dist/test/
 package-lock.json
 *.vsix
 dist/**/*.map
+.codebase-semantic-index/
+.intellisearch/

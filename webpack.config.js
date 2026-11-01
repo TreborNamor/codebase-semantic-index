@@ -6,6 +6,11 @@ const path = require('path');
 const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 
+// npm may hoist ONNX Runtime, so resolve it from Transformers rather than
+// assuming a nested node_modules directory. Both packages' entries live in dist.
+const transformersDist = path.dirname(require.resolve('@huggingface/transformers'));
+const onnxDist = path.dirname(require.resolve('onnxruntime-web', { paths: [transformersDist] }));
+
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
 
 /** @type WebpackConfig */
@@ -57,26 +62,18 @@ const webExtensionConfig = {
 		new CopyPlugin({
 			patterns: [
 				{
-					from: path.join(__dirname, 'node_modules', '@huggingface', 'transformers', 'dist', 'transformers.min.js'),
-					to: path.join(__dirname, 'dist', 'web', 'transformers.min.js'),
+					from: path.join(transformersDist, 'transformers.min.js'),
+					to: 'transformers.min.js',
 				},
-				// asyncify variants (Chrome/Electron/Edge)
+				// The bundled Transformers runtime uses the asyncify WASM loader.
+				// Package the matching pair so model startup never falls back to a CDN.
 				{
-					from: path.join(__dirname, 'node_modules', '@huggingface', 'transformers', 'node_modules', 'onnxruntime-web', 'dist', 'ort-wasm-simd-threaded.asyncify.wasm'),
-					to: path.join(__dirname, 'dist', 'web', 'ort-wasm-simd-threaded.asyncify.wasm'),
-				},
-				{
-					from: path.join(__dirname, 'node_modules', '@huggingface', 'transformers', 'node_modules', 'onnxruntime-web', 'dist', 'ort-wasm-simd-threaded.asyncify.mjs'),
-					to: path.join(__dirname, 'dist', 'web', 'ort-wasm-simd-threaded.asyncify.mjs'),
-				},
-				// standard variants (Safari)
-				{
-					from: path.join(__dirname, 'node_modules', '@huggingface', 'transformers', 'node_modules', 'onnxruntime-web', 'dist', 'ort-wasm-simd-threaded.wasm'),
-					to: path.join(__dirname, 'dist', 'web', 'ort-wasm-simd-threaded.wasm'),
+					from: path.join(onnxDist, 'ort-wasm-simd-threaded.asyncify.wasm'),
+					to: 'ort-wasm-simd-threaded.asyncify.wasm',
 				},
 				{
-					from: path.join(__dirname, 'node_modules', '@huggingface', 'transformers', 'node_modules', 'onnxruntime-web', 'dist', 'ort-wasm-simd-threaded.mjs'),
-					to: path.join(__dirname, 'dist', 'web', 'ort-wasm-simd-threaded.mjs'),
+					from: path.join(onnxDist, 'ort-wasm-simd-threaded.asyncify.mjs'),
+					to: 'ort-wasm-simd-threaded.asyncify.mjs',
 				},
 			],
 		}),

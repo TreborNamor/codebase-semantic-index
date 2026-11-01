@@ -1,79 +1,54 @@
-﻿import * as vscode from 'vscode';
-import { IntelliSearchViewProvider, openPanel, setPendingAutoBuild, runIncrementalUpdate } from './panelManager';
-import { initEmbeddingWorker, IntelliSearchWorkerProvider } from './embeddingWorker';
-import { IntelliSearchTool } from './searchTool';
+import * as vscode from 'vscode';
+import { CodebaseSemanticIndexViewProvider, openPanel, buildAll, openPromptRefiner } from './panelManager';
+import { initEmbeddingWorker, CodebaseSemanticIndexWorkerProvider } from './embeddingWorker';
+import { CodebaseSemanticIndexTool } from './searchTool';
+import { workspaceIndex } from './workspaceIndex';
+import { isInsideWorkspaceRoot } from './utils';
 
-// ---------------------------------------------------------------------------
-// Activation
-// ---------------------------------------------------------------------------
+interface GitRepository { state: { onDidChange(listener: () => void): vscode.Disposable } }
+interface GitApi { repositories: GitRepository[]; onDidOpenRepository(listener: (repository: GitRepository) => void): vscode.Disposable }
+
 export function activate(context: vscode.ExtensionContext): void {
-	// Start the background embedding worker first so the WASM model begins
-	// loading before the user opens the panel.
-	initEmbeddingWorker(context);
-
-	const provider = new IntelliSearchViewProvider(context);
-	const workerProvider = new IntelliSearchWorkerProvider(context);
-
 	context.subscriptions.push(
-		vscode.window.registerWebviewViewProvider(
-			IntelliSearchViewProvider.viewType,
-			provider,
-			{ webviewOptions: { retainContextWhenHidden: true } },
-		),
-		vscode.window.registerWebviewViewProvider(
-			IntelliSearchWorkerProvider.viewType,
-			workerProvider,
-			{ webviewOptions: { retainContextWhenHidden: true } },
-		),
-		vscode.commands.registerCommand('intellisearch.openPanel', () =>
-			openPanel(),
-		),
-		vscode.commands.registerCommand('intellisearch.buildIndex', () => {
-			setPendingAutoBuild(true);
-			openPanel();
-		}),
-		vscode.lm.registerTool('intellisearch_search', new IntelliSearchTool(context)),
+		workspaceIndex,
+		vscode.window.registerWebviewViewProvider(CodebaseSemanticIndexViewProvider.viewType,
+			new CodebaseSemanticIndexViewProvider(context), { webviewOptions: { retainContextWhenHidden: true } }),
+		vscode.window.registerWebviewViewProvider(CodebaseSemanticIndexWorkerProvider.viewType,
+			new CodebaseSemanticIndexWorkerProvider(context), { webviewOptions: { retainContextWhenHidden: true } }),
+		vscode.commands.registerCommand('codebaseSemanticIndex.openPanel', openPanel),
+		vscode.commands.registerCommand('codebaseSemanticIndex.refinePrompt', openPromptRefiner),
+		vscode.commands.registerCommand('codebaseSemanticIndex.buildIndex', async () => { await openPanel(); await buildAll(); }),
+		vscode.lm.registerTool('codebase_semantic_index_search', new CodebaseSemanticIndexTool()),
 	);
-
-	// -------------------------------------------------------------------------
-	// File watcher — keep the index incrementally up to date.
-	// -------------------------------------------------------------------------
-	const pendingChanged = new Set<string>();
-	const pendingDeleted = new Set<string>();
-	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
-	const DEBOUNCE_MS = 3_000;
-
-	function scheduleUpdate(): void {
-		const workspaceUri = vscode.workspace.workspaceFolders?.[0]?.uri;
-		if (!workspaceUri) { return; }
-		if (debounceTimer) { clearTimeout(debounceTimer); }
-		debounceTimer = setTimeout(() => {
-			debounceTimer = undefined;
-			const changed = [...pendingChanged].map(s => vscode.Uri.parse(s));
-			const deleted = [...pendingDeleted].map(s => vscode.Uri.parse(s));
-			pendingChanged.clear();
-			pendingDeleted.clear();
-			runIncrementalUpdate(workspaceUri, changed, deleted);
-		}, DEBOUNCE_MS);
-	}
-
+	initEmbeddingWorker();
+	const scheduleAll = () => { for (const folder of vscode.workspace.workspaceFolders ?? []) { workspaceIndex.schedule(folder.uri); } };
+	const changed = (uri: vscode.Uri) => {
+		// Persisted cache writes must not trigger a perpetual rebuild loop.
+		if (/\/(?:\.codebase-semantic-index|\.intellisearch)(?:\/|$)/.test(uri.path)) { return; }
+		if (/\/\.git\//.test(uri.path) && !/\/\.git\/(?:HEAD|index|packed-refs|refs\/.*)$/.test(uri.path)) { return; }
+		for (const folder of vscode.workspace.workspaceFolders ?? []) {
+			if (isInsideWorkspaceRoot(uri, folder.uri)) { workspaceIndex.schedule(folder.uri); }
+		}
+	};
 	const watcher = vscode.workspace.createFileSystemWatcher('**/*');
-	context.subscriptions.push(
-		watcher,
-		watcher.onDidChange(uri => {
-			pendingChanged.add(uri.toString());
-			scheduleUpdate();
+	context.subscriptions.push(watcher, watcher.onDidCreate(changed), watcher.onDidChange(changed), watcher.onDidDelete(changed),
+		vscode.workspace.onDidChangeWorkspaceFolders(() => workspaceIndex.syncWorkspaceFolders()),
+		vscode.workspace.onDidChangeConfiguration(event => {
+			if (['files.exclude', 'search.exclude', 'codebaseSemanticIndex'].some(key => event.affectsConfiguration(key))) { scheduleAll(); }
 		}),
-		watcher.onDidCreate(uri => {
-			pendingChanged.add(uri.toString());
-			scheduleUpdate();
-		}),
-		watcher.onDidDelete(uri => {
-			pendingDeleted.add(uri.toString());
-			pendingChanged.delete(uri.toString());
-			scheduleUpdate();
-		}),
+		vscode.workspace.onDidChangeTextDocument(event => workspaceIndex.onDocumentChanged(event.document)),
+		vscode.workspace.onDidSaveTextDocument(document => { workspaceIndex.onDocumentChanged(document); }),
+		vscode.workspace.onDidCloseTextDocument(document => workspaceIndex.onDocumentClosed(document)),
 	);
+	// Git state is an optional notification source, not an input corpus or index identity.
+	const git = vscode.extensions.getExtension<{ getAPI(version: number): GitApi }>('vscode.git');
+	if (git) {
+		void git.activate().then(exports => {
+			const api = exports.getAPI(1);
+			const watch = (repository: GitRepository) => { context.subscriptions.push(repository.state.onDidChange(scheduleAll)); };
+			api.repositories.forEach(watch);
+			context.subscriptions.push(api.onDidOpenRepository(repository => { watch(repository); scheduleAll(); }));
+		}, error => { console.warn('[Codebase Semantic Index] Git notifications unavailable:', error); });
+	}
+	workspaceIndex.syncWorkspaceFolders();
 }
-
-export function deactivate(): void {}
