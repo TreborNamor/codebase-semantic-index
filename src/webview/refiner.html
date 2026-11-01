@@ -7,20 +7,24 @@
 	content="default-src 'none'; script-src 'unsafe-inline' __CSP_SOURCE__; style-src 'unsafe-inline';">
 <title>Prompt Refinement</title>
 <style>
+:root{--csi-cyan:#53c7f5;--csi-cyan-hover:#7bd8ff;--csi-green:#4fdda8;--csi-violet:#bd9cff;--csi-amber:#ffc66d;--csi-coral:#ff827d;--csi-ink:#101821;--csi-surface:#17212c;--csi-line:#304254}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--vscode-font-family,sans-serif);font-size:var(--vscode-font-size,13px);background:var(--vscode-editor-background,#1e1e1e);color:var(--vscode-editor-foreground,#d4d4d4);padding:14px;display:flex;flex-direction:column;gap:10px}
-header{display:flex;align-items:center;gap:8px}
-h2{font-size:1.05em;font-weight:600}
+header{display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--csi-line)}
+h2{font-size:1.05em;font-weight:700;color:var(--csi-cyan)}
 label{font-size:.9em;font-weight:600}
-textarea{width:100%;min-height:110px;resize:vertical;padding:8px;font:inherit;line-height:1.45;background:var(--vscode-input-background,#3c3c3c);color:var(--vscode-input-foreground,#d4d4d4);border:1px solid var(--vscode-input-border,#555);border-radius:2px}
-textarea:focus{outline:1px solid var(--vscode-focusBorder,#007fd4)}
-button{background:var(--vscode-button-background,#0e639c);color:var(--vscode-button-foreground,#fff);border:none;padding:5px 12px;cursor:pointer;border-radius:2px;font:inherit;font-size:.9em}
+textarea{width:100%;min-height:110px;resize:vertical;padding:8px;font:inherit;line-height:1.45;background:var(--csi-ink);color:var(--vscode-input-foreground,#d4d4d4);border:1px solid var(--csi-line);border-radius:5px;transition:border-color .15s ease,box-shadow .15s ease}
+textarea:focus{outline:none;border-color:var(--csi-cyan);box-shadow:0 0 0 2px #53c7f533}
+button{background:var(--csi-cyan);color:var(--csi-ink);border:1px solid transparent;padding:6px 12px;cursor:pointer;border-radius:5px;font:inherit;font-size:.9em;font-weight:600;transition:background .15s ease,box-shadow .15s ease,transform .15s ease}
 button:disabled{opacity:.45;cursor:default}
-button:not(:disabled):hover{background:var(--vscode-button-hoverBackground,#1177bb)}
-.secondary{background:var(--vscode-button-secondaryBackground,#3a3d41);color:var(--vscode-button-secondaryForeground,#fff)}
+button:not(:disabled):hover{background:var(--csi-cyan-hover);box-shadow:0 0 14px #53c7f544;transform:translateY(-1px)}
+.secondary{background:var(--csi-surface);color:var(--csi-violet);border-color:#6f56a0}
+.secondary:not(:disabled):hover{background:#261e36;color:#d7c4ff}
 .actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .note{font-size:.85em;line-height:1.45;color:var(--vscode-descriptionForeground,#888)}
-#status.error{color:var(--vscode-errorForeground,#f48771)}
+#model-name{color:var(--csi-amber)}
+#status{color:var(--csi-green)}
+#status.error{color:var(--csi-coral)}
 </style>
 </head>
 <body>

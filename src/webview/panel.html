@@ -11,6 +11,7 @@
 		style-src 'unsafe-inline';">
 <title>Codebase Semantic Index</title>
 <style>
+:root{--csi-cyan:#53c7f5;--csi-cyan-hover:#7bd8ff;--csi-green:#4fdda8;--csi-violet:#bd9cff;--csi-amber:#ffc66d;--csi-coral:#ff827d;--csi-ink:#101821;--csi-surface:#17212c;--csi-line:#304254}
 *{box-sizing:border-box;margin:0;padding:0}
 body{
 	font-family:var(--vscode-font-family,sans-serif);
@@ -20,55 +21,54 @@ body{
 	padding:14px;display:flex;flex-direction:column;gap:10px
 }
 header{display:flex;align-items:center;justify-content:space-between;gap:8px}
-h2{font-size:1.05em;font-weight:600;white-space:nowrap}
+h2{font-size:1.05em;font-weight:700;white-space:nowrap;color:var(--csi-cyan)}
 .badge{
 	padding:2px 8px;border-radius:10px;font-size:.8em;white-space:nowrap;
-	background:var(--vscode-badge-background,#4d4d4d);
-	color:var(--vscode-badge-foreground,#fff)
+	background:var(--csi-cyan);color:var(--csi-ink);font-weight:600;box-shadow:0 0 12px #53c7f533
 }
-.badge.ok{background:var(--vscode-testing-iconPassed,#4ec9b0);color:#000}
-.badge.err{background:var(--vscode-inputValidation-errorBackground,#5a1d1d);color:var(--vscode-inputValidation-errorForeground,#f48771)}
+.badge.ok{background:var(--csi-green);color:#092019;box-shadow:0 0 12px #4fdda833}
+.badge.err{background:var(--csi-coral);color:#2a0d0c;box-shadow:0 0 12px #ff827d33}
 button{
-	background:var(--vscode-button-background,#0e639c);
-	color:var(--vscode-button-foreground,#fff);
-	border:none;padding:5px 14px;cursor:pointer;border-radius:2px;font:inherit;font-size:.9em
+	background:var(--csi-cyan);color:var(--csi-ink);border:1px solid transparent;
+	padding:5px 14px;cursor:pointer;border-radius:5px;font:inherit;font-size:.9em;font-weight:600;
+	transition:background .15s ease,box-shadow .15s ease,transform .15s ease
 }
 button:disabled{opacity:.45;cursor:default}
-button:not(:disabled):hover{background:var(--vscode-button-hoverBackground,#1177bb)}
+button:not(:disabled):hover{background:var(--csi-cyan-hover);box-shadow:0 0 14px #53c7f544;transform:translateY(-1px)}
 #actions{display:flex;gap:8px;align-items:center}
 #progress-section{display:none;flex-direction:column;gap:4px}
-#progress-label{font-size:.85em;color:var(--vscode-descriptionForeground,#888)}
-.pbar{background:var(--vscode-editorWidget-border,#454545);height:3px;border-radius:2px;overflow:hidden}
-#pbar-fill{background:var(--vscode-progressBar-background,#0e70c0);height:100%;width:0%;transition:width .25s ease}
-#progress-detail{font-size:.8em;color:var(--vscode-descriptionForeground,#666);font-family:var(--vscode-editor-font-family,monospace)}
+#progress-label{font-size:.85em;color:var(--csi-cyan)}
+.pbar{background:var(--csi-line);height:4px;border-radius:4px;overflow:hidden}
+#pbar-fill{background:linear-gradient(90deg,var(--csi-cyan),var(--csi-violet),var(--csi-green));height:100%;width:0%;transition:width .25s ease;border-radius:inherit}
+#progress-detail{font-size:.8em;color:var(--csi-violet);font-family:var(--vscode-editor-font-family,monospace)}
 #embed-section{display:none;flex-direction:column;gap:4px}
-#embed-label{font-size:.85em;color:var(--vscode-descriptionForeground,#888)}
-#embed-fill{background:var(--vscode-charts-yellow,#cca700);height:100%;width:0%;transition:width .1s ease}
-#embed-detail{font-size:.8em;color:var(--vscode-descriptionForeground,#666);font-family:var(--vscode-editor-font-family,monospace)}
+#embed-label{font-size:.85em;color:var(--csi-violet)}
+#embed-fill{background:linear-gradient(90deg,var(--csi-violet),var(--csi-cyan));height:100%;width:0%;transition:width .1s ease;border-radius:inherit}
+#embed-detail{font-size:.8em;color:var(--csi-cyan);font-family:var(--vscode-editor-font-family,monospace)}
 #search-section{display:none;flex-direction:column;gap:8px}
 .search-row{display:flex;gap:6px}
 #search-input{
-	flex:1;background:var(--vscode-input-background,#3c3c3c);
+	flex:1;min-width:0;background:var(--csi-ink);
 	color:var(--vscode-input-foreground,#d4d4d4);
-	border:1px solid var(--vscode-input-border,#555);
-	padding:5px 8px;border-radius:2px;font:inherit
+	border:1px solid var(--csi-line);
+	padding:7px 9px;border-radius:5px;font:inherit;transition:border-color .15s ease,box-shadow .15s ease
 }
-#search-input:focus{outline:1px solid var(--vscode-focusBorder,#007fd4);border-color:var(--vscode-focusBorder,#007fd4)}
+#search-input:focus{outline:none;border-color:var(--csi-cyan);box-shadow:0 0 0 2px #53c7f533}
 #results{display:flex;flex-direction:column;gap:6px;max-height:65vh;overflow-y:auto}
 .result{
 	padding:8px 10px;
-	background:var(--vscode-list-inactiveSelectionBackground,#2a2d2e);
-	border:1px solid transparent;border-radius:3px;cursor:pointer
+	background:var(--csi-surface);
+	border:1px solid var(--csi-line);border-radius:6px;cursor:pointer;transition:border-color .15s ease,background .15s ease
 }
 .result:hover{
-	background:var(--vscode-list-hoverBackground,#2a2d2e);
-	border-color:var(--vscode-list-focusHighlightForeground,#3a3d3e)
+	background:#1c2a38;
+	border-color:var(--csi-violet);box-shadow:0 0 12px #bd9cff22
 }
 .result-header{display:flex;gap:6px;align-items:baseline;font-size:.82em;margin-bottom:4px;flex-wrap:wrap}
-.result-file{color:var(--vscode-textLink-foreground,#3794ff);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.result-loc{color:var(--vscode-descriptionForeground,#888);white-space:nowrap}
-.result-sym{color:var(--vscode-symbolIcon-functionForeground,#dcdcaa);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
-.result-score{color:var(--vscode-charts-green,#4ec9b0);font-weight:600;white-space:nowrap}
+.result-file{color:var(--csi-cyan);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.result-loc{color:var(--csi-amber);white-space:nowrap}
+.result-sym{color:var(--csi-violet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.result-score{color:var(--csi-green);font-weight:700;white-space:nowrap}
 .result-preview{
 	font-family:var(--vscode-editor-font-family,monospace);font-size:11px;
 	white-space:pre-wrap;overflow:hidden;max-height:3.8em;

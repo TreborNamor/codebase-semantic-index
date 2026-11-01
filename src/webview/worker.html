@@ -10,6 +10,7 @@
 		style-src 'unsafe-inline';">
 <title>Codebase Semantic Index Worker</title>
 <style>
+:root{--csi-cyan:#53c7f5;--csi-green:#4fdda8;--csi-violet:#bd9cff;--csi-amber:#ffc66d;--csi-coral:#ff827d;--csi-ink:#101821;--csi-line:#304254}
 *{box-sizing:border-box;margin:0;padding:0}
 body{
 	font-family:var(--vscode-font-family,sans-serif);
@@ -19,28 +20,33 @@ body{
 	padding:18px;display:flex;flex-direction:column;gap:14px
 }
 .header{display:flex;align-items:center;gap:10px}
+.header strong{color:var(--csi-cyan)}
 .badge{
 	padding:2px 8px;border-radius:10px;font-size:.8em;white-space:nowrap;
-	background:var(--vscode-badge-background,#4d4d4d);
-	color:var(--vscode-badge-foreground,#fff)
+	background:var(--csi-cyan);color:var(--csi-ink);font-weight:600;box-shadow:0 0 12px #53c7f533
 }
-.badge.ok{background:var(--vscode-testing-iconPassed,#4ec9b0);color:#000}
-.badge.err{background:var(--vscode-inputValidation-errorBackground,#5a1d1d);color:var(--vscode-inputValidation-errorForeground,#f48771)}
+.badge.loading{background:var(--csi-violet);color:#1a1027;box-shadow:0 0 12px #bd9cff33}
+.badge.ok{background:var(--csi-green);color:#092019;box-shadow:0 0 12px #4fdda833}
+.badge.err{background:var(--csi-coral);color:#2a0d0c;box-shadow:0 0 12px #ff827d33}
 .desc{color:var(--vscode-descriptionForeground,#888);font-size:.9em;line-height:1.5em;max-width:520px}
-hr{border:none;border-top:1px solid var(--vscode-widget-border,#454545)}
+hr{border:none;border-top:1px solid var(--csi-line)}
 .section-title{
 	font-size:.75em;text-transform:uppercase;letter-spacing:.06em;
-	color:var(--vscode-descriptionForeground,#888);margin-bottom:8px
+	color:var(--csi-cyan);margin-bottom:8px
 }
+#embed-section .section-title{color:var(--csi-violet)}
 .stat-grid{
 	display:grid;grid-template-columns:max-content 1fr;
 	gap:5px 18px;align-items:baseline
 }
 .stat-label{color:var(--vscode-descriptionForeground,#888);font-size:.9em;white-space:nowrap}
-.stat-value{font-size:.9em;font-variant-numeric:tabular-nums}
+.stat-value{font-size:.9em;font-variant-numeric:tabular-nums;color:var(--csi-green)}
+#s-backend,#s-search{color:var(--csi-cyan)}
+#s-build,#s-update{color:var(--csi-amber)}
+#s-search{color:var(--csi-violet)}
 .mono{font-family:var(--vscode-editor-font-family,monospace);font-size:.85em}
-.pbar{background:var(--vscode-editorWidget-border,#454545);height:3px;border-radius:2px;overflow:hidden;margin-top:4px}
-.pbar-fill{background:var(--vscode-progressBar-background,#0e70c0);height:100%;width:0%;transition:width .1s ease}
+.pbar{background:var(--csi-line);height:4px;border-radius:4px;overflow:hidden;margin-top:4px}
+.pbar-fill{background:linear-gradient(90deg,var(--csi-cyan),var(--csi-violet),var(--csi-green));height:100%;width:0%;transition:width .1s ease;border-radius:inherit}
 #embed-section{flex-direction:column;gap:4px;display:none}
 #embed-label{font-size:.85em}
 #embed-detail{font-size:.8em;color:var(--vscode-descriptionForeground,#666);font-family:var(--vscode-editor-font-family,monospace)}
@@ -110,7 +116,7 @@ let incrDeleted     = 0;
 // ---------------------------------------------------------------------------
 function setStatus(text, ok) {
 	statusEl.textContent = text;
-	statusEl.className = 'badge' + (ok === true ? ' ok' : ok === false ? ' err' : '');
+	statusEl.className = 'badge' + (ok === true ? ' ok' : ok === false ? ' err' : /loading|embedding/i.test(text) ? ' loading' : '');
 }
 
 function fmt(n) { return n == null ? '\u2014' : n.toLocaleString(); }
