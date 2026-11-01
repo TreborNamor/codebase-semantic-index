@@ -1,0 +1,121 @@
+{
+  "name": "codebase-semantic-index",
+  "displayName": "Codebase Semantic Index",
+  "description": "Semantic search for your codebase using local AI embeddings. Find code by concept, not just keywords.",
+  "version": "0.1.0",
+  "publisher": "TreborNamor",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TreborNamor/codebase-semantic-index"
+  },
+  "bugs": {
+    "url": "https://github.com/TreborNamor/codebase-semantic-index/issues"
+  },
+  "homepage": "https://github.com/TreborNamor/codebase-semantic-index#readme",
+  "keywords": [
+    "search",
+    "semantic",
+    "ai",
+    "embeddings",
+    "codebase"
+  ],
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "browser": "./dist/web/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codebase-semantic-index",
+          "title": "Codebase Semantic Index",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "codebase-semantic-index": [
+        {
+          "type": "webview",
+          "id": "intellisearch.panel",
+          "name": "Codebase Semantic Index"
+        },
+        {
+          "type": "webview",
+          "id": "intellisearch.worker",
+          "name": "Embedding Worker"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "intellisearch.openPanel",
+        "title": "Codebase Semantic Index: Open Panel"
+      },
+      {
+        "command": "intellisearch.buildIndex",
+        "title": "Codebase Semantic Index: Build Index"
+      }
+    ],
+    "languageModelTools": [
+      {
+        "name": "intellisearch_search",
+        "toolReferenceName": "intellisearch",
+        "canBeReferencedInPrompt": true,
+        "tags": [
+          "search",
+          "codebase",
+          "semantic"
+        ],
+        "displayName": "Codebase Semantic Index: Semantic Search",
+        "modelDescription": "Searches the workspace codebase using semantic vector similarity (cosine distance). Use this instead of grep or reading files when you need to find code related to a concept, feature, or behaviour. Returns ranked chunks with file paths and line ranges so you can read only the most relevant sections. Requires the Codebase Semantic Index to have been built first.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Natural language or code description of what to find, e.g. 'cosine similarity calculation' or 'error handling for file not found'"
+            },
+            "maxResults": {
+              "type": "number",
+              "description": "Maximum number of results to return (default: 8)"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package-web",
+    "compile-web": "webpack",
+    "watch-web": "webpack --watch",
+    "package-web": "webpack --mode production --devtool hidden-source-map",
+    "lint": "eslint src",
+    "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=."
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.100.0",
+    "@types/webpack-env": "^1.18.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "@vscode/test-web": "^0.0.80",
+    "@vscode/vsce": "^3.9.1",
+    "@huggingface/transformers": "^4.2.0",
+    "copy-webpack-plugin": "^14.0.0",
+    "eslint": "^9.0.0",
+    "process": "^0.11.10",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.5.2",
+    "webpack": "^5.92.1",
+    "webpack-cli": "^5.1.4"
+  }
+}

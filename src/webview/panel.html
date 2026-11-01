@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy"
+	content="default-src 'none';
+		script-src 'unsafe-inline' __CSP_SOURCE__ blob:;
+		connect-src https: blob: data:;
+		worker-src blob:;
+		style-src 'unsafe-inline';">
+<title>Codebase Semantic Index</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+	font-family:var(--vscode-font-family,sans-serif);
+	font-size:var(--vscode-font-size,13px);
+	background:var(--vscode-editor-background,#1e1e1e);
+	color:var(--vscode-editor-foreground,#d4d4d4);
+	padding:14px;display:flex;flex-direction:column;gap:10px
+}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h2{font-size:1.05em;font-weight:600;white-space:nowrap}
+.badge{
+	padding:2px 8px;border-radius:10px;font-size:.8em;white-space:nowrap;
+	background:var(--vscode-badge-background,#4d4d4d);
+	color:var(--vscode-badge-foreground,#fff)
+}
+.badge.ok{background:var(--vscode-testing-iconPassed,#4ec9b0);color:#000}
+.badge.err{background:var(--vscode-inputValidation-errorBackground,#5a1d1d);color:var(--vscode-inputValidation-errorForeground,#f48771)}
+button{
+	background:var(--vscode-button-background,#0e639c);
+	color:var(--vscode-button-foreground,#fff);
+	border:none;padding:5px 14px;cursor:pointer;border-radius:2px;font:inherit;font-size:.9em
+}
+button:disabled{opacity:.45;cursor:default}
+button:not(:disabled):hover{background:var(--vscode-button-hoverBackground,#1177bb)}
+#actions{display:flex;gap:8px;align-items:center}
+#progress-section{display:none;flex-direction:column;gap:4px}
+#progress-label{font-size:.85em;color:var(--vscode-descriptionForeground,#888)}
+.pbar{background:var(--vscode-editorWidget-border,#454545);height:3px;border-radius:2px;overflow:hidden}
+#pbar-fill{background:var(--vscode-progressBar-background,#0e70c0);height:100%;width:0%;transition:width .25s ease}
+#progress-detail{font-size:.8em;color:var(--vscode-descriptionForeground,#666);font-family:var(--vscode-editor-font-family,monospace)}
+#embed-section{display:none;flex-direction:column;gap:4px}
+#embed-label{font-size:.85em;color:var(--vscode-descriptionForeground,#888)}
+#embed-fill{background:var(--vscode-charts-yellow,#cca700);height:100%;width:0%;transition:width .1s ease}
+#embed-detail{font-size:.8em;color:var(--vscode-descriptionForeground,#666);font-family:var(--vscode-editor-font-family,monospace)}
+#search-section{display:none;flex-direction:column;gap:8px}
+.search-row{display:flex;gap:6px}
+#search-input{
+	flex:1;background:var(--vscode-input-background,#3c3c3c);
+	color:var(--vscode-input-foreground,#d4d4d4);
+	border:1px solid var(--vscode-input-border,#555);
+	padding:5px 8px;border-radius:2px;font:inherit
+}
+#search-input:focus{outline:1px solid var(--vscode-focusBorder,#007fd4);border-color:var(--vscode-focusBorder,#007fd4)}
+#results{display:flex;flex-direction:column;gap:6px;max-height:65vh;overflow-y:auto}
+.result{
+	padding:8px 10px;
+	background:var(--vscode-list-inactiveSelectionBackground,#2a2d2e);
+	border:1px solid transparent;border-radius:3px;cursor:pointer
+}
+.result:hover{
+	background:var(--vscode-list-hoverBackground,#2a2d2e);
+	border-color:var(--vscode-list-focusHighlightForeground,#3a3d3e)
+}
+.result-header{display:flex;gap:6px;align-items:baseline;font-size:.82em;margin-bottom:4px;flex-wrap:wrap}
+.result-file{color:var(--vscode-textLink-foreground,#3794ff);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.result-loc{color:var(--vscode-descriptionForeground,#888);white-space:nowrap}
+.result-sym{color:var(--vscode-symbolIcon-functionForeground,#dcdcaa);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.result-score{color:var(--vscode-charts-green,#4ec9b0);font-weight:600;white-space:nowrap}
+.result-preview{
+	font-family:var(--vscode-editor-font-family,monospace);font-size:11px;
+	white-space:pre-wrap;overflow:hidden;max-height:3.8em;
+	color:var(--vscode-editor-foreground,#d4d4d4);opacity:.8
+}
+.no-results{color:var(--vscode-descriptionForeground,#888);font-size:.9em;padding:8px 0}
+</style>
+</head>
+<body>
+
+<header>
+	<h2>&#x1F50D; Codebase Semantic Index</h2>
+	<span id="badge" class="badge">Initializing&#x2026;</span>
+</header>
+
+<div id="actions">
+	<button id="btn-build" disabled>Build Index</button>
+</div>
+
+<div id="progress-section">
+	<div id="progress-label">&#x2026;</div>
+	<div class="pbar"><div id="pbar-fill"></div></div>
+	<div id="progress-detail"></div>
+</div>
+<div id="embed-section">
+	<div id="embed-label">Generating embeddings&#x2026;</div>
+	<div class="pbar"><div id="embed-fill"></div></div>
+	<div id="embed-detail"></div>
+</div>
+<div id="search-section">
+	<div class="search-row">
+		<input id="search-input" type="text" placeholder="Describe what you&#x2019;re looking for&#x2026;"
+			autocomplete="off" spellcheck="false" />
+		<button id="btn-search">Search</button>
+	</div>
+	<div id="results"></div>
+</div>
+
+<script type="module">
+const vscode = acquireVsCodeApi();
+
+// DOM refs
+const badge         = document.getElementById('badge');
+const btnBuild      = document.getElementById('btn-build');
+const progressSec   = document.getElementById('progress-section');
+const progressLabel = document.getElementById('progress-label');
+const pbarFill      = document.getElementById('pbar-fill');
+const progressDet   = document.getElementById('progress-detail');
+const searchSec     = document.getElementById('search-section');
+const searchInput   = document.getElementById('search-input');
+const btnSearch     = document.getElementById('btn-search');
+const resultsEl     = document.getElementById('results');
+const embedSec      = document.getElementById('embed-section');
+const embedLabel    = document.getElementById('embed-label');
+const embedFill     = document.getElementById('embed-fill');
+const embedDetail   = document.getElementById('embed-detail');
+
+// Runtime state
+let isIndexing = false;
+
+// UI helpers
+function setBadge(text, cls) {
+	badge.textContent = text;
+	badge.className = 'badge' + (cls ? ' ' + cls : '');
+}
+function showProgress(label, pct, detail) {
+	progressSec.style.display = 'flex';
+	progressLabel.textContent = label;
+	pbarFill.style.width = Math.max(0, Math.min(100, pct)) + '%';
+	progressDet.textContent = detail || '';
+}
+function hideProgress() { progressSec.style.display = 'none'; }
+function showSearch()   { searchSec.style.display = 'flex'; }
+
+let embedStartTime = 0;
+function showEmbedProgress(done, total, currentFile) {
+	embedSec.style.display = 'flex';
+	const pct = total > 0 ? (done / total) * 100 : 0;
+	embedFill.style.width = Math.max(0, Math.min(100, pct)) + '%';
+	const eta = done > 0 ? Math.round(((Date.now() - embedStartTime) / done) * (total - done) / 1000) : null;
+	const etaStr = eta !== null && eta > 0 ? '  \u2014  ~' + (eta >= 60 ? Math.floor(eta/60) + 'm ' + (eta%60) + 's' : eta + 's') + ' left' : '';
+	embedDetail.textContent = done + ' / ' + total + ' chunks' + (currentFile ? '  \u2014  ' + currentFile : '') + etaStr;
+}
+function hideEmbedProgress() { embedSec.style.display = 'none'; }
+
+// Yield until the browser has committed a paint frame.
+const paint = () => new Promise(r => requestAnimationFrame(r));
+
+// Search — delegate to extension host (embedding happens in the worker panel)
+async function runSearch() {
+	const query = searchInput.value.trim();
+	if (!query) return;
+
+	btnSearch.disabled = true;
+	setBadge('Searching\u2026');
+	vscode.postMessage({ type: 'searchQuery', query });
+}
+
+// Results rendering
+function esc(s)  { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escA(s) { return s.replace(/"/g,'&quot;'); }
+
+function displayResults(results) {
+	if (!results.length) {
+		resultsEl.innerHTML = '<p class="no-results">No results found.</p>';
+		return;
+	}
+	resultsEl.innerHTML = results.map(({ chunk, score }) => {
+		const pct = (score * 100).toFixed(1);
+		const loc = 'L' + (chunk.range.start + 1) + '\u2013' + (chunk.range.end + 1);
+		const sym = chunk.symbolName
+			? '<span class="result-sym">' + esc(chunk.symbolName) + '</span>' : '';
+		return '<div class="result"' +
+			' data-file="' + escA(chunk.file) + '"' +
+			' data-start="' + chunk.range.start + '"' +
+			' data-end="'   + chunk.range.end   + '">' +
+			'<div class="result-header">' +
+				'<span class="result-file">'  + esc(chunk.file) + '</span>' +
+				'<span class="result-loc">'   + loc + '</span>' +
+				sym +
+				'<span class="result-score">' + pct + '%</span>' +
+			'</div>' +
+			'<pre class="result-preview">' + esc(chunk.preview) + '</pre>' +
+			'</div>';
+	}).join('');
+
+	resultsEl.querySelectorAll('.result').forEach(el => {
+		el.addEventListener('click', () => vscode.postMessage({
+			type: 'openFile',
+			file:  el.dataset.file,
+			start: +el.dataset.start,
+			end:   +el.dataset.end,
+		}));
+	});
+}
+
+// Message handler (extension -> webview)
+window.addEventListener('message', async e => {
+	const msg = e.data;
+	switch (msg.type) {
+
+		case 'init':
+			btnBuild.disabled = false;
+			btnBuild.textContent = msg.hasIndex ? 'Rebuild Index' : 'Build Index';
+			setBadge(msg.hasIndex ? 'Loading index\u2026' : 'No index yet');
+			if (msg.autoBuild) setTimeout(() => btnBuild.click(), 50);
+			break;
+
+		case 'loadIndex':
+			setBadge(msg.chunkCount + ' chunks indexed', 'ok');
+			btnBuild.disabled = false;
+			btnBuild.textContent = 'Rebuild Index';
+			showSearch();
+			break;
+
+		case 'triggerBuild':
+			if (!isIndexing && !btnBuild.disabled) btnBuild.click();
+			break;
+
+		case 'chunkStart':
+			showProgress('Chunking files\u2026', 0, '0 / ' + msg.total);
+			setBadge('Chunking\u2026');
+			break;
+
+		case 'chunkProgress':
+			showProgress(
+				'Chunking files\u2026',
+				(msg.done / msg.total) * 100,
+				msg.done + ' / ' + msg.total + '  \u2014  ' + msg.file,
+			);
+			break;
+
+		case 'embedProgress':
+			if (msg.done === 1) {
+				embedStartTime = Date.now();
+				embedLabel.textContent = 'Generating embeddings (' + msg.total + ' chunks)\u2026';
+				hideProgress();
+			}
+			showEmbedProgress(msg.done, msg.total, msg.file ?? null);
+			break;
+
+		case 'startEmbedding':
+			setBadge('Embedding ' + msg.chunks.length + ' chunks\u2026');
+			break;
+
+		case 'savingIndex':
+			hideEmbedProgress();
+			showProgress('Saving index\u2026', 100);
+			setBadge('Saving\u2026');
+			break;
+
+		case 'indexSaved':
+			hideProgress();
+			hideEmbedProgress();
+			setBadge(msg.meta.chunkCount + ' chunks indexed', 'ok');
+			isIndexing = false;
+			btnBuild.disabled = false;
+			btnBuild.textContent = 'Rebuild Index';
+			showSearch();
+			searchInput.focus();
+			break;
+
+		case 'searchResults':
+			displayResults(msg.results);
+			setBadge(msg.results.length > 0 ? msg.results.length + ' results' : 'No results', msg.results.length > 0 ? 'ok' : '');
+			btnSearch.disabled = false;
+			break;
+
+		case 'searchError':
+			setBadge('Search error: ' + msg.message, 'err');
+			btnSearch.disabled = false;
+			break;
+
+		case 'incrementalUpdate':
+			setBadge(msg.chunkCount + ' chunks indexed', 'ok');
+			break;
+
+		case 'error':
+			hideProgress();
+			hideEmbedProgress();
+			setBadge('Error: ' + msg.message, 'err');
+			isIndexing = false;
+			btnBuild.disabled = false;
+			break;
+	}
+});
+
+// Button / keyboard wiring
+btnBuild.addEventListener('click', () => {
+	if (isIndexing) return;
+	isIndexing = true;
+	btnBuild.disabled = true;
+	searchSec.style.display = 'none';
+	resultsEl.innerHTML = '';
+	vscode.postMessage({ type: 'buildIndex' });
+});
+
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+btnSearch.addEventListener('click', runSearch);
+
+// Announce ready to the extension host
+vscode.postMessage({ type: 'webviewReady' });
+</script>
+</body>
+</html>
