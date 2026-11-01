@@ -149,7 +149,7 @@
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vscode/test-web": "^0.0.80",
-    "@vscode/vsce": "^3.9.1",
+    "@vscode/vsce": "^4.1.0",
     "@huggingface/transformers": "^4.2.0",
     "copy-webpack-plugin": "^14.0.0",
     "eslint": "^9.0.0",
