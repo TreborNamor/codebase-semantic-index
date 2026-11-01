@@ -12,7 +12,7 @@ function render(results: RankedCandidate[], statuses: string[]): string {
 		const candidate = result.candidate;
 		const excerpt = candidateExcerpt(candidate);
 		const range = excerpt.range;
-		lines.push(`${i + 1}. ${candidate.rootName}: ${candidate.file} (${candidate.rootUri})`);
+		lines.push(`${i + 1}. ${candidate.file}`);
 		lines.push(`L${range.start + 1}:${(range.startCharacter ?? 0) + 1}–L${range.end + 1}:${(range.endCharacter ?? 0) + 1}` +
 			(candidate.symbolName ? ` [${candidate.symbolName}]` : '') + `; rank score ${result.score.toFixed(4)}`);
 		// Source is data: keep it as an exact excerpt, with no generated summary.

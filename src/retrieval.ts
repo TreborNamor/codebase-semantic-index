@@ -6,7 +6,6 @@ export interface RetrievalCandidate {
 	text: string;
 	vector?: Float32Array;
 	rootUri: string;
-	rootName: string;
 	contentHash: string;
 }
 

@@ -306,7 +306,7 @@ export class WorkspaceIndexService implements vscode.Disposable {
 						if (text === undefined || await hashText(text) !== chunk.contentHash) { valid = false; break; }
 						local.push({ file, range: chunk.range, symbolName: chunk.symbolName, text,
 							vector: indexed.vectors.subarray(chunk.vectorOffset, chunk.vectorOffset + VECTOR_DIM),
-							rootUri: workspaceKey(folder.uri), rootName: folder.name, contentHash: snapshot.hash });
+							rootUri: workspaceKey(folder.uri), contentHash: snapshot.hash });
 					}
 				}
 				if (valid) { candidates.push(...local); }
@@ -316,12 +316,12 @@ export class WorkspaceIndexService implements vscode.Disposable {
 					for (const [i, chunk] of overlay.chunks.entries()) {
 						candidates.push({ file, range: chunk.range, text: chunk.text, symbolName: chunk.symbolName,
 							vector: overlay.vectors?.subarray(i * VECTOR_DIM, (i + 1) * VECTOR_DIM),
-							rootUri: workspaceKey(folder.uri), rootName: folder.name, contentHash: snapshot.hash });
+							rootUri: workspaceKey(folder.uri), contentHash: snapshot.hash });
 					}
 				}
 			}
-			if (state.status) { statuses.add(`${folder.name}: ${state.status}`); }
-			if (stale) { statuses.add(`${folder.name}: current-file lexical fallback is active for changed/unindexed files.`); staleRoots.add(folder.uri); }
+			if (state.status) { statuses.add(state.status); }
+			if (stale) { statuses.add('Current-file lexical fallback is active for changed/unindexed files.'); staleRoots.add(folder.uri); }
 		}
 		let queryVector: Float32Array | undefined;
 		if (candidates.some(candidate => candidate.vector)) {

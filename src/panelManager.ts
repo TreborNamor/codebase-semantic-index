@@ -55,7 +55,7 @@ async function handleMessage(msg: Record<string, unknown>): Promise<void> {
 				const response = await workspaceIndex.search(String(msg.query ?? ''), undefined, 5);
 				const results = response.results.map(result => {
 					const excerpt = candidateExcerpt(result.candidate);
-					return { chunk: { file: result.candidate.file, rootUri: result.candidate.rootUri, rootName: result.candidate.rootName,
+					return { chunk: { file: result.candidate.file, rootUri: result.candidate.rootUri,
 						range: excerpt.range, symbolName: result.candidate.symbolName, preview: excerpt.text }, score: result.score };
 				});
 				currentView?.webview.postMessage({ type: 'searchResults', results, message: response.statuses.join(' ') });
