@@ -1,0 +1,7468 @@
+{
+  "real_model": true,
+  "offline_network_blocked": true,
+  "dataset_sha256": "68c33ec9a3c605a9d4c132e38114f074e69c3cf741c48af76dadfda33b782530",
+  "methodology": "Authored and labeled before running retrieval. Labels refer only to corpus source; this file is outside the indexed corpus. One author, no independent human adjudication. Every third query is tuning; the remaining 32 are held out. Do not tune on held-out results.",
+  "quality_limitations": "Small authored navigation fixture, one labeler, 48 queries and one run on one laptop; not evidence of large-repository generalization.",
+  "hardware": {
+    "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+    "logical_cpus": 8,
+    "ram_gib": 15.816974639892578
+  },
+  "settings": {
+    "embedding": {
+      "dimensions": 1024,
+      "threads": 4,
+      "batch_tokens": 512,
+      "batch_sequences": 4,
+      "query_tokens": 256,
+      "memory_budget_mb": 2048,
+      "idle_seconds": 300,
+      "cache_mb": 512,
+      "query_instruction": "Given a code search query, retrieve relevant source code that implements the requested behavior."
+    },
+    "index": {
+      "chunk_tokens": 384,
+      "max_file_bytes": 2097152,
+      "debounce_ms": 500,
+      "reconcile_seconds": 300,
+      "verify_seconds": 1800,
+      "engine_idle_seconds": 120,
+      "cache_limit_mb": 10240,
+      "cleanup_policy": "manual",
+      "cleanup_days": 90,
+      "excerpt_lines": 24,
+      "result_characters": 1600,
+      "output_characters": 24000
+    },
+    "files": {
+      "excludes": [],
+      "respect_gitignore": true
+    },
+    "projects": {}
+  },
+  "model_sha256": "06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+  "source_files": 16,
+  "source_bytes": 14532,
+  "source_tokens": 3145,
+  "initial_counts": {
+    "indexed_files": 16,
+    "chunks": 95,
+    "embedded_chunks": 95,
+    "pending_chunks": 0
+  },
+  "indexing": {
+    "phase": "ready",
+    "discovered": 16,
+    "processed": 16,
+    "changed_files": 16,
+    "unchanged_files": 0,
+    "removed_files": 0,
+    "skipped_files": 0,
+    "embedded_chunks": 95,
+    "cache_hits": 4,
+    "inferred_texts": 91,
+    "tokens": 3665,
+    "seconds": 27.7484,
+    "cancelled": false
+  },
+  "index_tokens_per_second": 132.07968747747617,
+  "cold_query_ms": 1218.055900069885,
+  "warm_uncached_semantic_p95_ms": 301.53999999999996,
+  "latency_method": "Model unloaded before cold query. Per query lexical, semantic, hybrid; hybrid reuses the query vector populated by semantic. warm_uncached_semantic excludes the one cold query and measures actual inference with a loaded model.",
+  "summary": {
+    "all": {
+      "lexical": {
+        "queries": 48,
+        "recall_at_5": 0.9791666666666666,
+        "recall_at_10": 0.9791666666666666,
+        "mrr_at_10": 0.9444444444444445,
+        "latency_p50_ms": 17.3,
+        "latency_p95_ms": 21.66
+      },
+      "semantic": {
+        "queries": 48,
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr_at_10": 0.9791666666666666,
+        "latency_p50_ms": 264.65,
+        "latency_p95_ms": 301.28
+      },
+      "hybrid": {
+        "queries": 48,
+        "recall_at_5": 0.9791666666666666,
+        "recall_at_10": 0.9791666666666666,
+        "mrr_at_10": 0.9375,
+        "latency_p50_ms": 37.349999999999994,
+        "latency_p95_ms": 42.655
+      }
+    },
+    "tuning": {
+      "lexical": {
+        "queries": 16,
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr_at_10": 0.9270833333333334,
+        "latency_p50_ms": 17.4,
+        "latency_p95_ms": 21.2
+      },
+      "semantic": {
+        "queries": 16,
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr_at_10": 1.0,
+        "latency_p50_ms": 270.0,
+        "latency_p95_ms": 299.225
+      },
+      "hybrid": {
+        "queries": 16,
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr_at_10": 0.96875,
+        "latency_p50_ms": 38.5,
+        "latency_p95_ms": 43.1
+      }
+    },
+    "heldout": {
+      "lexical": {
+        "queries": 32,
+        "recall_at_5": 0.96875,
+        "recall_at_10": 0.96875,
+        "mrr_at_10": 0.953125,
+        "latency_p50_ms": 17.25,
+        "latency_p95_ms": 21.625
+      },
+      "semantic": {
+        "queries": 32,
+        "recall_at_5": 1.0,
+        "recall_at_10": 1.0,
+        "mrr_at_10": 0.96875,
+        "latency_p50_ms": 261.3,
+        "latency_p95_ms": 300.24
+      },
+      "hybrid": {
+        "queries": 32,
+        "recall_at_5": 0.96875,
+        "recall_at_10": 0.96875,
+        "mrr_at_10": 0.921875,
+        "latency_p50_ms": 37.05,
+        "latency_p95_ms": 42.185
+      }
+    }
+  },
+  "queries": [
+    {
+      "id": 1,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 20.1,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/auth.py",
+          "symbol": "hash_password"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "verify_password"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 1,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 32.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/auth.py",
+          "symbol": "hash_password"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "verify_password"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 1,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 34.6,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/auth.py",
+          "symbol": "hash_password"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "verify_password"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 2,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": null,
+      "elapsed_ms": 19.0,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "hash_password"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 2,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 269.6,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/auth.py",
+          "symbol": "verify_password"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "hash_password"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 2,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": null,
+      "elapsed_ms": 37.4,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/auth.py",
+          "symbol": "hash_password"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 3,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 17.3,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "hash_password"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "write_atomic"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 3,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 303.1,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 3,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 39.8,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "hash_password"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "write_atomic"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 4,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 20.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 4,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 250.6,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 4,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 42.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 5,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 14.5,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "invoice_total"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 5,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 234.7,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "invoice_total"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "protect_spreadsheet_cell"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 5,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 35.4,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "invoice_total"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 6,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 14.7,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 6,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 289.8,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "verify_password"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 6,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 36.1,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "verify_password"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 7,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 16.8,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "invoice_total"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 7,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 280.5,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 7,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 39.0,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 8,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 16.6,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 8,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 284.9,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.error"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 8,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 41.6,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 9,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 13.1,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 9,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 271.1,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 9,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 39.0,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 10,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 16.1,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 10,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 260.7,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 10,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 36.9,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 11,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 19.4,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 11,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 239.2,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 11,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 39.1,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 12,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 18.0,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 12,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 303.1,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 12,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 38.4,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 13,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 14.8,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.__init__"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 13,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 270.6,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.__init__"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 13,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 33.8,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.__init__"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 14,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 13.5,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.__init__"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 14,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 248.1,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.__init__"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 14,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 37.4,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.__init__"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 15,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 14.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 15,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 281.0,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.__init__"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 15,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 36.9,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.__init__"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 16,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 21.0,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 16,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 251.9,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "protect_spreadsheet_cell"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "write_atomic"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 16,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 35.7,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "write_atomic"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 17,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 17.6,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/files.py",
+          "symbol": "write_atomic"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "hash_password"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 17,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 268.7,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/files.py",
+          "symbol": "write_atomic"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 17,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 35.9,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/files.py",
+          "symbol": "write_atomic"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 18,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 16.3,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "write_atomic"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 18,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 268.8,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 18,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 37.3,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "write_atomic"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 19,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 3,
+      "elapsed_ms": 16.5,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "hash_password"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 19,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 308.0,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "protect_spreadsheet_cell"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 19,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 2,
+      "elapsed_ms": 38.1,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "hash_password"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 20,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 21.9,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "appendQueryParameters"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 20,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 240.1,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 20,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 37.9,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 21,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 20.7,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 21,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 245.0,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.__init__"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 21,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 38.5,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "appendQueryParameters"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 22,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 16.3,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/exports.py",
+          "symbol": "protect_spreadsheet_cell"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 22,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 243.1,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/exports.py",
+          "symbol": "protect_spreadsheet_cell"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 22,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 38.3,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/exports.py",
+          "symbol": "protect_spreadsheet_cell"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 23,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 16.7,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 23,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 297.9,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 23,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 38.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 24,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 19.8,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "appendQueryParameters"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 24,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 252.1,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "protect_spreadsheet_cell"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 24,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 35.9,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "protect_spreadsheet_cell"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 25,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 19.5,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.loading"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 25,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 292.8,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 25,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 38.7,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 26,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 18.3,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 26,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 222.2,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 26,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 37.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 27,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 16.8,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.__init__"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 27,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 238.7,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 27,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 35.9,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 28,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 15.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.emit"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.error"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 28,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 287.0,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.metrics"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 28,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 38.7,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 29,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 13.7,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.error"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.loading"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.emit"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.selectedRegion"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 29,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 208.1,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.metrics"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 29,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 36.3,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.metrics"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 30,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 18.0,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "invoice_total"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 30,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 249.3,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 30,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 32.5,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "invoice_total"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 31,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 17.3,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "appendQueryParameters"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 31,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 292.8,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.__init__"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 31,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 45.8,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 32,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 21.4,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/http.ts",
+          "symbol": "appendQueryParameters"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 32,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 264.0,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/http.ts",
+          "symbol": "appendQueryParameters"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 32,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 42.9,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/http.ts",
+          "symbol": "appendQueryParameters"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 33,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 22.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 33,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 271.6,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 33,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 36.0,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 34,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 2,
+      "elapsed_ms": 17.5,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 34,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 296.3,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "protect_spreadsheet_cell"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 34,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 39.0,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "authorizationHeaders"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 35,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 21.4,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "appendQueryParameters"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 35,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 248.3,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.__init__"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 35,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 38.1,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "appendQueryParameters"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 36,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 17.4,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.emit"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 36,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 294.2,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.emit"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.selectedRegion"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 36,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 36.9,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.emit"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 37,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 21.8,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "require_role"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.selectedRegion"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 37,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 269.4,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.selectedRegion"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "protect_spreadsheet_cell"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 37,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 40.5,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.selectedRegion"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 38,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 17.1,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 38,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 232.1,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 38,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 34.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/format.ts",
+          "symbol": "relativeTime"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "formatMoney"
+        },
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "write_atomic"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 39,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 21.4,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "write_atomic"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "appendQueryParameters"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.get"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "savePreferences"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 39,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 292.9,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "protect_spreadsheet_cell"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 39,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 104.4,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/format.ts",
+          "symbol": "accessibleChartLabel"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "protect_spreadsheet_cell"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 40,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 15.1,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.error"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.loading"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.emit"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.selectedRegion"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "ResponseCache.put"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 40,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 251.9,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.error"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.loading"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.emit"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.selectedRegion"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 40,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 36.0,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.error"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.loading"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.emit"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.selectedRegion"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 41,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 13.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.emit"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.selectedRegion"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.loading"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 41,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 2,
+      "elapsed_ms": 258.6,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.selectedRegion"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.emit"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 41,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 2,
+      "elapsed_ms": 34.6,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.applyFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.selectedRegion"
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.emit"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/DashboardFilters.vue",
+          "symbol": "DashboardFilters.loading"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 42,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 17.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 42,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 2,
+      "elapsed_ms": 265.3,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "encode_cursor"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 42,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 2,
+      "elapsed_ms": 37.6,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "synchronizeTabs"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 43,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 18.9,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "invoice_total"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 43,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 260.2,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "invoice_total"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "schedule_digest"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 43,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 42.0,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "invoice_total"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 44,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 17.1,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "appendQueryParameters"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "invoice_total"
+        },
+        {
+          "path": "backend/cache.py",
+          "symbol": "cache_key"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 44,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 249.3,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "invoice_total"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 44,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 36.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "monthly_revenue"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "invoice_total"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 45,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 2,
+      "elapsed_ms": 17.4,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 45,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 270.1,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "retry_delay"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 45,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 2,
+      "elapsed_ms": 35.9,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/files.py",
+          "symbol": "validate_upload"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "resolve_upload"
+        },
+        {
+          "path": "frontend/storage.ts",
+          "symbol": "loadPreferences"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "accounts"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": null
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "payment_events"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 46,
+      "split": "tuning",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 18.9,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "validate_webhook_signature"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "database/schema.sql",
+          "symbol": "idx_invoice_account_status"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 46,
+      "split": "tuning",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 295.5,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/files.py",
+          "symbol": "write_atomic"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 46,
+      "split": "tuning",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 36.6,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "record_payment_once"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "decode_cursor"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "claim_next_job"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 47,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 14.5,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 47,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 237.7,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "deactivate_account"
+        },
+        {
+          "path": "backend/jobs.py",
+          "symbol": "recover_expired_leases"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "backend/auth.py",
+          "symbol": "rotate_refresh_token"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "backend/billing.py",
+          "symbol": "refund_payment"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 47,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 32.2,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "redact_personal_data"
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": "readiness_probe"
+        },
+        {
+          "path": "docs/operations.md",
+          "symbol": null
+        },
+        {
+          "path": "backend/routes.py",
+          "symbol": null
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "uploads"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "jobs"
+        },
+        {
+          "path": "config/application.toml",
+          "symbol": "server"
+        },
+        {
+          "path": "backend/exports.py",
+          "symbol": "stream_csv"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 48,
+      "split": "heldout",
+      "mode": "lexical",
+      "relevant_rank": 1,
+      "elapsed_ms": 15.0,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/http.ts",
+          "symbol": "fetchWithRetry"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 48,
+      "split": "heldout",
+      "mode": "semantic",
+      "relevant_rank": 1,
+      "elapsed_ms": 237.8,
+      "query_inference": true,
+      "top_results": [
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.filters"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": 48,
+      "split": "heldout",
+      "mode": "hybrid",
+      "relevant_rank": 1,
+      "elapsed_ms": 36.1,
+      "query_inference": false,
+      "top_results": [
+        {
+          "path": "backend/routes.py",
+          "symbol": "fetch_dashboard_metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.metrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.reloadMetrics"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": null
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.revenueTotal"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.updateDashboardFilters"
+        },
+        {
+          "path": "backend/pagination.py",
+          "symbol": "page_after"
+        },
+        {
+          "path": "frontend/useDashboard.ts",
+          "symbol": "useDashboard.pending"
+        }
+      ],
+      "warnings": []
+    }
+  ],
+  "reopen_sync": {
+    "phase": "ready",
+    "discovered": 16,
+    "processed": 16,
+    "changed_files": 0,
+    "unchanged_files": 16,
+    "removed_files": 0,
+    "skipped_files": 0,
+    "embedded_chunks": 0,
+    "cache_hits": 0,
+    "inferred_texts": 0,
+    "tokens": 0,
+    "seconds": 0.079,
+    "cancelled": false
+  },
+  "persistent_index_reopen": {
+    "phase": "ready",
+    "discovered": 16,
+    "processed": 16,
+    "changed_files": 0,
+    "unchanged_files": 16,
+    "removed_files": 0,
+    "skipped_files": 0,
+    "embedded_chunks": 0,
+    "cache_hits": 0,
+    "inferred_texts": 0,
+    "tokens": 0,
+    "seconds": 0.0789,
+    "cancelled": false
+  },
+  "rename_sync": {
+    "phase": "ready",
+    "discovered": 2,
+    "processed": 2,
+    "changed_files": 1,
+    "unchanged_files": 0,
+    "removed_files": 1,
+    "skipped_files": 1,
+    "embedded_chunks": 1,
+    "cache_hits": 1,
+    "inferred_texts": 0,
+    "tokens": 0,
+    "seconds": 0.0625,
+    "cancelled": false
+  },
+  "incremental_update_ms": [
+    276.3342000544071,
+    250.39800000377,
+    293.481900007464,
+    246.60559999756515,
+    229.19499990530312,
+    263.72269995044917,
+    259.7739000339061,
+    240.68190006073564,
+    252.44139996357262,
+    274.6673000510782
+  ],
+  "update_tokens": [
+    23,
+    23,
+    23,
+    23,
+    23,
+    23,
+    23,
+    23,
+    23,
+    23
+  ],
+  "update_p95_ms": 285.7654350285884,
+  "peak_rss_mib": 1243.42578125,
+  "index_bytes": 4403570,
+  "embedding_cache_bytes": 716800
+}

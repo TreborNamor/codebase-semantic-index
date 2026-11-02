@@ -1,0 +1,33 @@
+{
+  "real_model": true,
+  "model": "Qwen/Qwen3-Embedding-0.6B-GGUF",
+  "sha256": "06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+  "backend": "llama-cpp-python 0.3.19",
+  "device": "CPU",
+  "threads": 4,
+  "pooling": "last",
+  "dimensions": 1024,
+  "shape": [
+    2,
+    1024
+  ],
+  "normalized": true,
+  "network_disabled": true,
+  "load_seconds": 0.9244829000672325,
+  "batch_seconds": 0.4421261000679806,
+  "batch_tokens": 39,
+  "warm_query_seconds": 0.24327200010884553,
+  "batch_single_cosine": 1.0,
+  "sample_similarities": [
+    0.6565421223640442,
+    0.1817973256111145
+  ],
+  "process_rss_mib": 967.4296875,
+  "model_metadata": {
+    "general.architecture": "qwen3",
+    "general.file_type": "7",
+    "qwen3.pooling_type": "3",
+    "tokenizer.ggml.add_bos_token": "false",
+    "tokenizer.ggml.add_eos_token": "true"
+  }
+}

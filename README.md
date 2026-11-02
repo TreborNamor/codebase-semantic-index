@@ -1,111 +1,224 @@
-# Codebase Semantic Index
+# CodeConverge
 
-A VS Code extension that searches the files in your current workspace using local Qwen3 embeddings and exact identifier/path matching. It does not traverse commits, index other branches, or query a remote repository search service.
+Local hybrid code search that automatically follows trusted folders opened in
+Windows VS Code. Install once, use **File → Open Folder**, and let Copilot search
+the current workspace through MCP. Single-root, multi-root and concurrent editor
+windows have independent authority and persistent project indexes.
 
-The retrieval contract is: **every returned code excerpt comes from an eligible file in the current workspace, using the current editor contents when unsaved changes exist.** Source is verified at retrieval time; always re-read it before editing.
+The companion obtains roots from `workspace.workspaceFolders`; it never guesses
+from the working directory, Git, or the focused editor. No project registration,
+project-local MCP file, or injected project instruction file is needed. An empty
+or untrusted window grants no source access. Closing a folder preserves its cache.
 
-## Get started
+## Install once
 
-1. Install the extension and open your project or multi-root workspace.
-2. Open VS Code. Qwen loads asynchronously during startup, and the **Build Index** button stays disabled until the model is ready. Loading the model does not start indexing. Click **Build Index** to create or rebuild the index; searches synchronize current files before retrieving results. The first model download can take time. After the model is active, file changes reconcile automatically. Inference runs locally using q8 WASM. This release uses a consistent single-threaded WASM backend instead of attempting unsupported quantized WebGPU operations.
-3. Open Copilot Chat and select **Agent** mode.
-4. Check that **Codebase Semantic Index: Semantic Search** is enabled in the active agent's tool selection, as described below. If it is already enabled, no additional toggle is needed.
-5. Ask a codebase question normally; you do not need to mention the tool in every prompt. For example:
+Requirements: Windows x64, standard 64-bit CPython 3.13, VS Code 1.144 or later,
+and GitHub Copilot with the **Copilot** harness. Node/npm are needed to build the
+extension from source, but not to use the packaged VSIX. The tested CPU is an
+Intel i7-11370H with 16 GiB RAM; allow approximately 2 GiB for the indexing process.
 
-   ```text
-   Find how failed indexing operations are retried.
-   Verify the relevant current source ranges before proposing a change.
-   ```
+From this source checkout:
 
-Copilot's built-in semantic index can remain disabled. This extension does not change your Copilot settings, model selection, billing, or permissions.
+```powershell
+git clone https://github.com/TreborNamor/codebase-semantic-index.git
+cd codebase-semantic-index
+py -3.13 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+.\scripts\build.ps1
+.\scripts\install.ps1
+```
 
-### Enable the tool in Copilot Agent mode
+The installer uses hashed, pinned runtime wheels, creates a dedicated normal
+installation outside the checkout, verifies the official Qwen model, caches
+21 Tree-sitter grammars, installs the VSIX and adds two managed user-level files:
 
-**The tool must be available and enabled for the active agent before Copilot can call it.** Installing the extension or building an index does not by itself confirm that the agent's tool selection includes it.
+```text
+~/.copilot/instructions/codeconverge.instructions.md
+~/.copilot/agents/codeconverge-research.agent.md
+```
 
-- **Copilot harness:** run **Chat: Open Customizations**, select **Tools**, find **Codebase Semantic Index: Semantic Search**, and ensure it is checked. This selection persists in the active user profile.
-- **Local harness:** select **Agent**, open **Configure Tools** in the chat input, and ensure **Codebase Semantic Index: Semantic Search** is checked for the request.
-- **Custom agents:** if the agent defines a restricted `tools` list, include this extension's search tool using the agent editor's tool picker. Check the selected agent's effective tools rather than assuming another agent's selection applies.
+`COPILOT_HOME` is respected. Existing customized files are preserved. The dynamic
+MCP provider supplies each window's capabilities; a static user MCP configuration
+cannot safely provide this editor authority and is unnecessary.
 
-Once enabled, Copilot can select the tool automatically based on the task and its instructions. This project's [Copilot instructions](.github/copilot-instructions.md) tell it when to prefer semantic discovery and when to use exact local lookup. Instruction files guide tool selection; they cannot enable a disabled tool or guarantee invocation on every message. To request it explicitly, use `#codebaseSemanticIndex`.
+Initial setup requires Internet access for packages and verified assets.
+Afterward, discovery, parsing, inference, storage and retrieval run locally with
+no inference service, TCP listener, Docker or database server. Copilot itself
+receives the bounded excerpts requested by its tools as part of normal agent use.
 
-Expand a tool call in the conversation to confirm that Copilot invoked **Codebase Semantic Index: Semantic Search** (`codebase_semantic_index_search`). See the official [tool-selection documentation](https://code.visualstudio.com/docs/agents/run/tools) for interface and harness details. Tool availability is separate from approval: enabling it does not bypass your permission controls.
+Already-open windows need **Developer: Reload Window** after an upgrade. Normal
+folder changes require no reload, path setting or manual refresh.
 
-## Refine a prompt before sending it to Copilot
+## Use it
 
-Open the extension's Activity Bar panel, or run **Codebase Semantic Index: Refine Prompt** from the Command Palette. The wand button in the extension view's title bar focuses the same composer.
+Open a trusted local folder. The status bar moves from **Indexing** to **Ready**.
+Lexical and symbol results become searchable before embeddings finish; tool
+responses explicitly identify partial indexes. Saved on-disk changes synchronize
+automatically. Unsaved editor buffers are not indexed.
 
-1. Write your request in **Your draft**.
-2. Click **Refine Prompt**. On first use, choose a model exposed by Copilot's Language Model API. The extension remembers this choice; **Change model** lets you select another. This selection is separate from the coding agent's model.
-3. Review and optionally edit the **Revised prompt**. The refiner is instructed to improve clarity while preserving your intent, requirements, constraints, language, technical details, and literal references. Model rewrites can make mistakes; review before use.
-4. Click **Insert into Copilot**. This replaces Copilot's current input with the revised text as an **unsent draft**. It does not execute the request, switch the agent/model, or transfer file attachments. Press Send in Copilot when ready. **Copy** is available as an alternative.
+Examples for Copilot:
 
-Each refinement is a separate model request subject to your Copilot access and usage allowance. The extension sends only the entered draft and concise rewriting instructions, with no workspace source, conversation history, semantic retrieval, or tools. It does not contact Gemini or require a separate API key. VS Code may ask for consent before the extension can use a Copilot model. If no models are exposed to the extension, check Copilot sign-in and model access; availability can differ from the chat model picker.
+* “Use CodeConverge to find where dashboard filter selections refresh metrics.”
+* “Find the definition of `fetchDashboardMetrics`.”
+* “Search this workspace for how payment retries avoid duplicate processing.”
+* “Delegate this investigation to the codeconverge-research subagent.”
 
-Typing does not trigger a model call. Drafts and reviewed text are saved locally as webview state. Refinements are limited to 12,000 draft characters and a 4,096-token input budget (or the model's smaller limit), with a 90-second timeout and bounded response handling. Editing the draft or clicking **Cancel** cancels the active refinement; late responses cannot replace a newer draft. Failures keep your original draft.
+The agent must choose to call a tool; registration alone does not guarantee model
+behavior. The installed instructions encourage focused searches, top-k 5, result
+reuse, source verification before edits and native-tool fallback when unavailable.
+Custom subagents with fixed tool allowlists must include CodeConverge explicitly.
 
-The composer lives in its own **Prompt Refinement** Activity Bar container, separate from **Codebase Semantic Index** (which contains the index panel and embedding worker). VS Code does not expose a public API to read Copilot's unsent input or add a custom button directly inside it. Insertion uses the VS Code chat command with `isPartialQuery: true`; if insertion is unavailable in your host, use **Copy**. Refinement does not require a workspace index or the semantic-search tool to be enabled.
+| Tool | Behavior |
+| --- | --- |
+| `search_code` | auto/hybrid/semantic/lexical/symbol retrieval; relative path globs, language filters, top_k 1–50 |
+| `find_symbol` | Exact/prefix definitions, classes, components, routes and exported identifiers |
+| `index_status` | This window's roots, project IDs, counts, progress, synchronization, model and warnings |
+| `refresh_index` | Incremental resynchronization; full rebuild requires an editor confirmation |
+| `manage_index` | List cached metadata; propose inactive cache deletion/cleanup with editor confirmation |
 
-## How current-file retrieval works
+Results contain relative paths, source URIs, symbols, exact excerpt lines, channel
+ranks and index freshness. Before returning an excerpt the engine verifies its
+file hash against current saved source. Changed/deleted files are suppressed and
+scheduled for synchronization. Search never silently expands to cached projects.
 
-- Each workspace root has separate state and storage, identified by its complete URI, including scheme and remote authority. Separate worktrees do not share an index just because they use the same repository or branch name.
-- A saved-file manifest records content hashes. Reconciliation discovers changed/new files, removes deleted or newly excluded files, and reuses unchanged embeddings. File changes received during a build remain queued.
-- Unsaved documents form a transient overlay and are embedded before they can appear in semantic results. Search synchronizes saved files before retrieval and suppresses stale embeddings.
-- Long functions and module-level gaps are split into bounded source chunks instead of being truncated. Results include precise source ranges.
-- Identifier/path/text rankings and vector similarity are fused, and overlapping results are deduplicated. Similarity is not a probability or a percentage match.
-- Model failures, invalid vectors, and incompatible indexes are reported explicitly. Semantic search fails closed with no lexical fallback when embeddings are unavailable; a zero-vector embedding is never treated as success.
+Maintenance commands: **CodeConverge: Show Status**, **Refresh Workspace**,
+**Rebuild Workspace**, **Manage Cached Projects**. Rebuild reuses valid cached
+embeddings. Deletion requires closing all windows using that index, selecting the
+exact cache and approving the originating editor's dialog. An MCP caller cannot
+approve maintenance by supplying a boolean argument.
 
-Indexes live under `.codebase-semantic-index/` within each root. Immutable data/vector generations are published through a committed manifest with integrity hashes so readers do not mix generations. Old generations are retained to avoid deleting files used by another open window. Indexes from older releases, another root, or a different embedding/chunker configuration must be rebuilt from current files; historical previews are not trusted or migrated into fresh results. Use **Build Index** to rebuild.
+## Architecture and storage
 
-Eligibility respects supported text/code file types, nested `.gitignore` files, and each root's VS Code file/search exclusions, together with built-in exclusions for Git metadata, index storage, dependencies, and generated output. Files larger than 1 MiB, binary contents, and symbolic links are skipped. Ignored files do not become eligible merely because they are open. Review exclusions when an expected file is absent.
+A small TypeScript companion owns trusted workspace detection, watchers, status
+and `lm.registerMcpServerDefinitionProvider`. Python owns everything else. Stdio
+MCP proxies use window-scoped capabilities to reach one current-user-only Windows
+named pipe. A shared model and one fair background indexing worker serve all
+windows; interactive inference takes priority between small indexing batches.
+One window is elected to watch each project, preventing duplicate watcher sets.
 
-Local embeddings do not make Copilot chat offline: excerpts returned to an agent become part of its model context. The extension does not control evidence obtained through the agent's other tools or previous conversation history. Start a fresh chat after switching away from a conversation containing obsolete branch references.
+```text
+%LOCALAPPDATA%/CodeConverge/
+  runtime/             installed Python package and pinned dependencies
+  config/              host identity, optional settings.toml
+  models/              one verified Qwen Q8_0 and tokenizer
+  parsers/             verified offline grammar manifest and DLLs
+  indexes/<project-id>/ SQLite WAL + FTS5 + sqlite-vec, source metadata
+  cache/               shared content-addressed embeddings
+  logs/                bounded diagnostics, no queries or source text
+```
 
-## Search tool
+A user-profile `~/.codeconverge/installation.json` pointer records the canonical
+installation path. This handles AppData virtualization under packaged Windows
+apps and keeps ordinary VS Code launches and CLI setup on the same store. The
+installed wheel has no import dependency on this development checkout.
 
-The registered tool name remains `codebase_semantic_index_search`, with the prompt reference `#codebaseSemanticIndex`.
+Project identity includes canonical path, persisted host identity and directory
+identity. Same-named folders do not collide. Reopening verifies content hashes;
+unchanged chunks and embeddings survive file moves, sessions and restarts.
+SQLite commits file replacements and vector updates transactionally. Damaged
+derived databases are quarantined and rebuilt locally; source files are untouched.
 
-| Input | Behavior |
-|---|---|
-| `query` | Required natural-language description or code identifier. |
-| `maxResults` | Optional integer; defaults to 5 and is bounded to 1–20. |
-| `pathPrefix` | Optional literal workspace-relative file or directory, such as `src/services`; applied inside each root. Absolute paths, URIs, and parent traversal are rejected. |
+The backend uses official **Qwen/Qwen3-Embedding-0.6B Q8_0 GGUF**, llama.cpp on CPU,
+last-token pooling, EOS handling, L2 normalization and 1024 dimensions by default.
+Queries receive the Qwen task instruction; documents do not. Output dimensions,
+threads, batch/token budgets and idle behavior are configurable. A persistent
+embedding cache includes the model/configuration identity and content in its keys.
+SQLite BM25, exact/prefix symbol ranking and cosine neighbors are fused with RRF.
+No separate neural reranker is required. See [architecture](docs/ARCHITECTURE.md).
 
-Results show a workspace-relative file path, symbol when available, exact excerpt range, and a short current source excerpt without the workspace name. The tool honors VS Code's supplied output-token budget when available, so it can return fewer results than requested. Use semantic retrieval for concept discovery, local text/symbol search for known names, and narrow source reads before editing.
+## Configuration and exclusions
 
-## Optional current-workspace agent
+Settings are optional and global: `<application-home>/config/settings.toml`.
+See [the complete example](docs/settings.example.toml). Restart the engine after
+changing settings (close its Code windows, run `codeconverge stop-engine`, reopen).
+New embedding settings invalidate vectors; parsing settings rechunk saved source.
+Normal workspace switching and file synchronization never require these commands.
 
-This repository includes [Current Workspace](.github/agents/current-workspace.agent.md), an opt-in custom agent for VS Code's **Local harness**, which can use your selected Copilot model. Select the Local harness and then the agent in the chat picker. `target: vscode` controls file interpretation; it does not switch harnesses for you. To use the profile in another project, copy the file into that project's `.github/agents/` directory.
+Default filtering excludes Git history, environment files, dependencies, generated
+builds, binary assets, model/index storage and lockfiles. Nested `.gitignore`
+rules are respected without running Git, including useful untracked files.
+Tests, SQL, schemas, application configuration and documentation remain eligible.
+Symlinks/junctions are not traversed; source reads validate the final opened handle.
+Global/project-path filter overrides can extend or negate default generated-file
+rules; `.git`, `.env*`, binaries, escaped roots and application storage stay blocked.
+Unknown languages use explicit structural/token-budget fallbacks. Additional
+supported grammars can be cached with `codeconverge setup --languages kotlin`.
 
-The profile allows this extension and individual local read, text/file/symbol search, edit, and terminal tools. It omits the broad `search` group because that group can include built-in semantic codebase search. Confirm the extension's qualified tool reference using the agent editor's tool completions after installation, especially if you change the publisher identity. The prompt reference remains `#codebaseSemanticIndex`.
+Defaults: 4 CPU threads, 384-token chunks, 512 tokens per inference batch,
+4 sequences, 500 ms debounce, 5-minute reconciliation, 30-minute full hash checks,
+5-minute model idle unload and 2-minute engine exit after the final editor closes.
+The 2048 MiB memory budget is a monitored process budget, not an OS hard limit.
+Embedding memoization has a 512 MiB logical budget. Project indexes have a 10 GiB
+budget with manual cleanup by default; explicit `cleanup_policy = "lru"` enables
+age/size cleanup of inactive caches. Active indexes are never evicted.
 
-Tool identifiers differ between Local and Copilot harnesses. For a Copilot-harness profile, use its tool-picker completions to select this extension and the required local capabilities. Do not copy Local tool identifiers blindly. See the official [custom-agent file reference](https://code.visualstudio.com/docs/agents/reference/custom-agent-file-reference) and [tool reference](https://code.visualstudio.com/docs/agents/reference/tools-reference).
+## Validation and measured performance
 
-The profile is a workflow preference, not a sandbox: terminal commands can access other paths, network resources, or Git history. Existing approval controls remain in force. Its instructions limit source discovery to current workspace files unless you explicitly request other evidence.
+Run:
 
-## Development
-
-Use a current Node.js LTS release with npm:
-
-```sh
-npm install
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+Push-Location extension
+npm ci --ignore-scripts
+npm run compile
 npm test
-npm run typecheck
-npm run compile-web
-npm run test:web
-npm run test:refiner-ui
-npm run run-in-browser
+Pop-Location
+.\.venv\Scripts\python.exe scripts\benchmark.py
+.\scripts\test-vscode.ps1
 ```
 
-`test:web` requires an existing extension bundle from `compile-web` or `package-web`. Its current smoke fixture was written for lexical fallback and needs an embedding mock before it can validate semantic-only retrieval. It does not test real model inference. `run-in-browser` opens an interactive VS Code web development host. Copilot integration additionally requires a signed-in host with Copilot and this extension's tool enabled. Create a production bundle or an installable VSIX with:
+The benchmark freezes labels before inference, indexes only `benchmarks/corpus`,
+blocks network calls and compares all three retrieval modes on 48 labeled
+queries (16 tuning, 32 held out). The fixture is authored and has one labeler;
+results do not establish relevance on arbitrary large repositories. Results and
+methodology are in [benchmarks](docs/BENCHMARKS.md) and
+[raw measurements](artifacts/benchmarks/retrieval.json).
 
-```sh
-npm run package-web
-npx vsce package
+| Mode | Recall@5 | Recall@10 | MRR@10 |
+| --- | ---: | ---: | ---: |
+| Lexical | 0.979 | 0.979 | 0.944 |
+| Semantic | 1.000 | 1.000 | 0.979 |
+| Hybrid | 0.979 | 0.979 | 0.938 |
+
+Measured first indexing: 16 files, 95 chunks, 3,665 inferred tokens in 27.75 s.
+Warm uncached semantic p95: 302 ms initially and 371 ms on verification. Cold semantic query: 1.22–1.43 s. Peak process RSS:
+1,243 MiB. Reopen synchronization: 79 ms, zero inferred embeddings. The initial
+23-token single-file update p95 was 286 ms, excluding watcher debounce. The wholly
+changed 979-token background update measured a 10.63 s p95, including Python
+debounce and excluding the extension's additional 500 ms. The 5-second target
+for 1,000-token replacements is unmet on this laptop. Hybrid timing reused query
+vectors from semantic mode. See the scaling data in the benchmark report.
+Semantic ranked better than hybrid on this fixture; no improvement is claimed.
+
+Actual Copilot Auto parent and compatible custom-subagent MCP calls, multi-root
+removal/restoration, independent windows and a full editor restart have evidence
+in [the complete demonstration](docs/DEMONSTRATION.md) and
+[the integration record](docs/INTEGRATION-GATE.md). Haiku 5.5 is unavailable on
+this computer; Auto was explicitly authorized for validation. The initial child
+schema-loading failure was traced to Copilot's tool-deferral threshold. The
+companion sets 30 once when no explicit user value exists, preserves user choices,
+and offers **Restore Original Copilot Tool Loading** to undo and opt out. No
+trust, authentication, privacy or tool approval setting is changed.
+
+## Offline transfer, upgrades and removal
+
+`scripts/bundle.ps1` creates a checksummed Windows bundle containing the wheel,
+VSIX, locked dependency wheels and verified model/parser assets. Standard x64
+CPython 3.13 and VS Code must already exist on the destination. Run there:
+
+```powershell
+.\scripts\install.ps1 -Offline -Wheelhouse .\wheelhouse -AssetsDirectory .\assets
 ```
 
-## Evaluate correctness and cost
+Online upgrades use the same installer. Close editor windows before replacing a
+loaded inference runtime, then reopen; cached indexes survive. The installer
+preserves customized managed guidance files. See [maintenance and troubleshooting](docs/MAINTENANCE.md)
+for recovery, safe removal, compatibility details and uninstall instructions.
 
-First verify branch switches with unchanged filenames, deleted/newly ignored files, unsaved edits, edits during builds, separate roots/worktrees, and embedding failure. No stale or cross-root source should be returned as a current excerpt.
+This release supports local Windows volumes. Remote SSH, containers, WSL,
+network shares, macOS and Linux integration are outside the tested scope. Dense
+search uses persistent exact cosine scans suitable for the target local workloads;
+ANN and very large-repository performance are not claimed. Saved disk content is
+indexed, and source excerpts remain untrusted data.
 
-Then record 30 real queries covering identifiers, paths, behavior descriptions, imports, long-function tails, recent edits, and absent functionality. For repeatable coding tasks, record correct completion, whether the right result appeared in the first five hits, later searches/file-read tokens, latency, and total Copilot AI credits from Agent Debug Logs. Change one retrieval setting at a time and repeat representative tasks. Compare **cost per successful task**, rather than index size or one search response. This project makes no measured token-saving claim until those evaluations have been run.
+MIT-licensed application; model and dependencies retain their respective licenses.

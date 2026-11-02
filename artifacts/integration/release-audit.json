@@ -1,0 +1,22 @@
+{
+  "product": "CodeConverge",
+  "version": "0.2.0",
+  "python_tests": 45,
+  "node_tests": 2,
+  "actual_parent_and_child_mcp": true,
+  "actual_saved_edit_and_switching": true,
+  "actual_concurrent_windows_and_restart": true,
+  "fresh_offline_and_idempotent_install": true,
+  "hybrid_metrics": {
+    "queries": 48,
+    "recall_at_5": 0.9791666666666666,
+    "recall_at_10": 0.9791666666666666,
+    "mrr_at_10": 0.9375,
+    "latency_p50_ms": 42.2,
+    "latency_p95_ms": 50.86
+  },
+  "warm_uncached_semantic_p95_ms": 371.03999999999996,
+  "large_update_target_met": false,
+  "large_update_p95_ms": 10633.909899950959,
+  "large_update_limit_disclosed": true
+}

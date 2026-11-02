@@ -1,0 +1,38 @@
+{
+  "real_model": true,
+  "chunks": 3,
+  "rows": [
+    {
+      "batch_tokens": 512,
+      "threads": 4,
+      "tokens": 956,
+      "seconds": 7.491621799999848,
+      "minimum_baseline_cosine": 0.9999998807907104,
+      "process_rss_mib": 1402.27734375
+    },
+    {
+      "batch_tokens": 1024,
+      "threads": 4,
+      "tokens": 956,
+      "seconds": 7.297361199976876,
+      "minimum_baseline_cosine": 0.9997683763504028,
+      "process_rss_mib": 2084.38671875
+    },
+    {
+      "batch_tokens": 1024,
+      "threads": 8,
+      "tokens": 956,
+      "seconds": 6.678782299975865,
+      "minimum_baseline_cosine": 0.9997683763504028,
+      "process_rss_mib": 2084.73046875
+    },
+    {
+      "batch_tokens": 512,
+      "threads": 4,
+      "tokens": 956,
+      "seconds": 7.659066899912432,
+      "minimum_baseline_cosine": 0.9999998807907104,
+      "process_rss_mib": 1402.87109375
+    }
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "real_cpu_model": true,
+  "offline_network_blocked": true,
+  "samples": [
+    {
+      "budget_tokens": 100,
+      "actual_tokens": 89,
+      "elapsed_ms": 1451.227700104937,
+      "counts": {
+        "chunks": 1,
+        "embedded_chunks": 1
+      },
+      "cache_hits": 0,
+      "inferred_texts": 1
+    },
+    {
+      "budget_tokens": 100,
+      "actual_tokens": 89,
+      "elapsed_ms": 1451.8203000770882,
+      "counts": {
+        "chunks": 1,
+        "embedded_chunks": 1
+      },
+      "cache_hits": 0,
+      "inferred_texts": 1
+    },
+    {
+      "budget_tokens": 100,
+      "actual_tokens": 89,
+      "elapsed_ms": 1421.759199933149,
+      "counts": {
+        "chunks": 1,
+        "embedded_chunks": 1
+      },
+      "cache_hits": 0,
+      "inferred_texts": 1
+    },
+    {
+      "budget_tokens": 100,
+      "actual_tokens": 89,
+      "elapsed_ms": 1424.186100019142,
+      "counts": {
+        "chunks": 1,
+        "embedded_chunks": 1
+      },
+      "cache_hits": 0,
+      "inferred_texts": 1
+    },
+    {
+      "budget_tokens": 100,
+      "actual_tokens": 89,
+      "elapsed_ms": 1402.2636000299826,
+      "counts": {
+        "chunks": 1,
+        "embedded_chunks": 1
+      },
+      "cache_hits": 0,
+      "inferred_texts": 1
+    },
+    {
+      "budget_tokens": 500,
+      "actual_tokens": 500,
+      "elapsed_ms": 5917.723300051875,
+      "counts": {
+        "chunks": 2,
+        "embedded_chunks": 2
+      },
+      "cache_hits": 0,
+      "inferred_texts": 2
+    },
+    {
+      "budget_tokens": 500,
+      "actual_tokens": 500,
+      "elapsed_ms": 5875.7106999401,
+      "counts": {
+        "chunks": 2,
+        "embedded_chunks": 2
+      },
+      "cache_hits": 0,
+      "inferred_texts": 2
+    },
+    {
+      "budget_tokens": 500,
+      "actual_tokens": 500,
+      "elapsed_ms": 8468.366200104356,
+      "counts": {
+        "chunks": 2,
+        "embedded_chunks": 2
+      },
+      "cache_hits": 0,
+      "inferred_texts": 2
+    },
+    {
+      "budget_tokens": 500,
+      "actual_tokens": 500,
+      "elapsed_ms": 7388.834100100212,
+      "counts": {
+        "chunks": 2,
+        "embedded_chunks": 2
+      },
+      "cache_hits": 0,
+      "inferred_texts": 2
+    },
+    {
+      "budget_tokens": 500,
+      "actual_tokens": 500,
+      "elapsed_ms": 6253.967700060457,
+      "counts": {
+        "chunks": 2,
+        "embedded_chunks": 2
+      },
+      "cache_hits": 0,
+      "inferred_texts": 2
+    },
+    {
+      "budget_tokens": 1000,
+      "actual_tokens": 979,
+      "elapsed_ms": 9642.810299992561,
+      "counts": {
+        "chunks": 3,
+        "embedded_chunks": 3
+      },
+      "cache_hits": 0,
+      "inferred_texts": 3
+    },
+    {
+      "budget_tokens": 1000,
+      "actual_tokens": 979,
+      "elapsed_ms": 10171.97559995111,
+      "counts": {
+        "chunks": 3,
+        "embedded_chunks": 3
+      },
+      "cache_hits": 0,
+      "inferred_texts": 3
+    },
+    {
+      "budget_tokens": 1000,
+      "actual_tokens": 979,
+      "elapsed_ms": 10545.243899920024,
+      "counts": {
+        "chunks": 3,
+        "embedded_chunks": 3
+      },
+      "cache_hits": 0,
+      "inferred_texts": 3
+    },
+    {
+      "budget_tokens": 1000,
+      "actual_tokens": 979,
+      "elapsed_ms": 10656.076399958692,
+      "counts": {
+        "chunks": 3,
+        "embedded_chunks": 3
+      },
+      "cache_hits": 0,
+      "inferred_texts": 3
+    },
+    {
+      "budget_tokens": 1000,
+      "actual_tokens": 979,
+      "elapsed_ms": 10449.530099984258,
+      "counts": {
+        "chunks": 3,
+        "embedded_chunks": 3
+      },
+      "cache_hits": 0,
+      "inferred_texts": 3
+    }
+  ],
+  "method": "Written file through editor-control notification, Python debounce 500 ms, background scheduling and committed embeddings. Extension's own 500 ms notification debounce is not included.",
+  "p95_ms_by_budget": {
+    "100": 1451.701780082658,
+    "500": 8252.459780103527,
+    "1000": 10633.909899950959
+  }
+}

@@ -1,0 +1,36 @@
+# Optional global configuration: <application-home>/config/settings.toml
+# Restart the shared engine to apply changes. No workspace path is required.
+[embedding]
+dimensions = 1024
+threads = 4
+batch_tokens = 512
+batch_sequences = 4
+query_tokens = 256
+memory_budget_mb = 2048
+idle_seconds = 300
+cache_mb = 512
+query_instruction = "Given a code search query, retrieve relevant source code that implements the requested behavior."
+
+[index]
+chunk_tokens = 384
+max_file_bytes = 2097152
+debounce_ms = 500
+reconcile_seconds = 300
+verify_seconds = 1800
+engine_idle_seconds = 120
+cache_limit_mb = 10240
+cleanup_policy = "manual" # "lru" explicitly authorizes inactive index eviction
+cleanup_days = 90
+excerpt_lines = 24
+result_characters = 1600
+output_characters = 24000
+
+[files]
+respect_gitignore = true
+excludes = ["*.generated.ts", "reports/"]
+
+# Optional filter overrides, never project registration or source authority.
+# A project still must be explicitly opened and trusted in VS Code.
+# [projects.'C:\work\example']
+# excludes = ["generated/", "*.tmp"]
+# respect_gitignore = true

@@ -1,0 +1,147 @@
+{
+  "real_cpu_model": true,
+  "offline_network_blocked": true,
+  "samples": [
+    {
+      "budget_tokens": 100,
+      "actual_tokens": 99,
+      "elapsed_ms": 1573.6319000134245,
+      "counts": {
+        "chunks": 1,
+        "embedded_chunks": 1
+      }
+    },
+    {
+      "budget_tokens": 100,
+      "actual_tokens": 99,
+      "elapsed_ms": 1519.631200004369,
+      "counts": {
+        "chunks": 1,
+        "embedded_chunks": 1
+      }
+    },
+    {
+      "budget_tokens": 100,
+      "actual_tokens": 99,
+      "elapsed_ms": 1585.0440999493003,
+      "counts": {
+        "chunks": 1,
+        "embedded_chunks": 1
+      }
+    },
+    {
+      "budget_tokens": 100,
+      "actual_tokens": 99,
+      "elapsed_ms": 1503.6572999088094,
+      "counts": {
+        "chunks": 1,
+        "embedded_chunks": 1
+      }
+    },
+    {
+      "budget_tokens": 100,
+      "actual_tokens": 99,
+      "elapsed_ms": 1560.233199968934,
+      "counts": {
+        "chunks": 1,
+        "embedded_chunks": 1
+      }
+    },
+    {
+      "budget_tokens": 500,
+      "actual_tokens": 486,
+      "elapsed_ms": 4665.005499962717,
+      "counts": {
+        "chunks": 2,
+        "embedded_chunks": 2
+      }
+    },
+    {
+      "budget_tokens": 500,
+      "actual_tokens": 486,
+      "elapsed_ms": 4705.610999953933,
+      "counts": {
+        "chunks": 2,
+        "embedded_chunks": 2
+      }
+    },
+    {
+      "budget_tokens": 500,
+      "actual_tokens": 486,
+      "elapsed_ms": 4654.863500036299,
+      "counts": {
+        "chunks": 2,
+        "embedded_chunks": 2
+      }
+    },
+    {
+      "budget_tokens": 500,
+      "actual_tokens": 486,
+      "elapsed_ms": 4662.955199950375,
+      "counts": {
+        "chunks": 2,
+        "embedded_chunks": 2
+      }
+    },
+    {
+      "budget_tokens": 500,
+      "actual_tokens": 486,
+      "elapsed_ms": 4697.315199999139,
+      "counts": {
+        "chunks": 2,
+        "embedded_chunks": 2
+      }
+    },
+    {
+      "budget_tokens": 1000,
+      "actual_tokens": 992,
+      "elapsed_ms": 5953.372300020419,
+      "counts": {
+        "chunks": 3,
+        "embedded_chunks": 3
+      }
+    },
+    {
+      "budget_tokens": 1000,
+      "actual_tokens": 992,
+      "elapsed_ms": 5850.091599975713,
+      "counts": {
+        "chunks": 3,
+        "embedded_chunks": 3
+      }
+    },
+    {
+      "budget_tokens": 1000,
+      "actual_tokens": 992,
+      "elapsed_ms": 5933.379999944009,
+      "counts": {
+        "chunks": 3,
+        "embedded_chunks": 3
+      }
+    },
+    {
+      "budget_tokens": 1000,
+      "actual_tokens": 992,
+      "elapsed_ms": 5872.07370006945,
+      "counts": {
+        "chunks": 3,
+        "embedded_chunks": 3
+      }
+    },
+    {
+      "budget_tokens": 1000,
+      "actual_tokens": 992,
+      "elapsed_ms": 5944.251400069334,
+      "counts": {
+        "chunks": 3,
+        "embedded_chunks": 3
+      }
+    }
+  ],
+  "method": "Written file through editor-control notification, Python debounce 500 ms, background scheduling and committed embeddings. Extension's own 500 ms notification debounce is not included.",
+  "p95_ms_by_budget": {
+    "100": 1582.7616599621251,
+    "500": 4703.951839962974,
+    "1000": 5951.548120030202
+  }
+}

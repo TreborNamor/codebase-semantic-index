@@ -1,6 +1,23 @@
-node_modules/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
 dist/
-*.vsix
-.vscode-test-web
-.codebase-semantic-index/
-.intellisearch/
+extension/node_modules/
+extension/out/
+artifacts/private/
+# Machine-specific editor logs and Copilot execution records stay local.
+artifacts/integration/*
+!artifacts/integration/release-audit.json
+# One-off integration experiment; not part of the application.
+scripts/probe-deferral-setting.cjs
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+.coverage
+htmlcov/

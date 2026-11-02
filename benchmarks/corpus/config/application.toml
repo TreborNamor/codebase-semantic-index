@@ -1,0 +1,12 @@
+[server]
+host = "127.0.0.1"
+port = 8080
+request_timeout_seconds = 30
+
+[uploads]
+max_bytes = 5000000
+allowed_extensions = ["pdf", "txt", "csv"]
+
+[jobs]
+workers = 4
+lease_seconds = 60

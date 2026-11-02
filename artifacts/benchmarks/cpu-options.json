@@ -1,0 +1,40 @@
+{
+  "real_model": true,
+  "rows": [
+    {
+      "threads": 4,
+      "last_token_output_only": false,
+      "seconds": 8.030246100039221,
+      "tokens": 1000,
+      "minimum_baseline_cosine": 0.9999998807907104
+    },
+    {
+      "threads": 4,
+      "last_token_output_only": true,
+      "seconds": 8.192191999987699,
+      "tokens": 1000,
+      "minimum_baseline_cosine": 0.9999998807907104
+    },
+    {
+      "threads": 2,
+      "last_token_output_only": true,
+      "seconds": 11.115266000037082,
+      "tokens": 1000,
+      "minimum_baseline_cosine": 0.9999998807907104
+    },
+    {
+      "threads": 8,
+      "last_token_output_only": true,
+      "seconds": 7.015926899970509,
+      "tokens": 1000,
+      "minimum_baseline_cosine": 0.9999998807907104
+    },
+    {
+      "threads": 4,
+      "last_token_output_only": true,
+      "seconds": 7.8738029999658465,
+      "tokens": 1000,
+      "minimum_baseline_cosine": 0.9999998807907104
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "name": "codeconverge",
+  "displayName": "CodeConverge",
+  "description": "Local hybrid code search that automatically follows your trusted VS Code workspace.",
+  "version": "0.2.0",
+  "publisher": "codeconverge",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.144.0"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning"
+  ],
+  "main": "./out/extension.js",
+  "extensionKind": [
+    "ui"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Status is available; source access requires a trusted local workspace."
+    },
+    "virtualWorkspaces": false
+  },
+  "contributes": {
+    "mcpServerDefinitionProviders": [
+      {
+        "id": "codeconverge",
+        "label": "CodeConverge"
+      }
+    ],
+    "commands": [
+      {
+        "command": "codeconverge.showStatus",
+        "title": "CodeConverge: Show Status"
+      },
+      {
+        "command": "codeconverge.refreshWorkspace",
+        "title": "CodeConverge: Refresh Workspace"
+      },
+      {
+        "command": "codeconverge.rebuildWorkspace",
+        "title": "CodeConverge: Rebuild Workspace"
+      },
+      {
+        "command": "codeconverge.manageProjects",
+        "title": "CodeConverge: Manage Cached Projects"
+      },
+      {
+        "command": "codeconverge.restoreCopilotToolLoading",
+        "title": "CodeConverge: Restore Original Copilot Tool Loading"
+      }
+    ],
+    "configuration": {
+      "title": "CodeConverge",
+      "properties": {
+        "codeconverge.runtimePath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "description": "Optional installed CodeConverge Python runtime override. Set once at user level; never selects a project."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "check": "tsc -p . --noEmit",
+    "test": "node --test out/test/*.test.js",
+    "package": "vsce package --no-dependencies --allow-missing-repository --out ../dist/codeconverge-0.2.0.vsix"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.0",
+    "@types/vscode": "1.144.0",
+    "@vscode/vsce": "4.1.0",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "minimatch": "11.0.1"
+  }
+}
