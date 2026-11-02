@@ -1,6 +1,7 @@
+#Requires -Version 7.0
 [CmdletBinding()]
 param(
-    [string]$Python = 'C:\Program Files\Python313\python.exe',
+    [string]$Python = '',
     [string]$ApplicationHome = (Join-Path $env:LOCALAPPDATA 'CodeConverge'),
     [switch]$SkipExtension,
     [switch]$SkipUserIntegration,
@@ -20,6 +21,18 @@ $wheel = Join-Path $repositoryRoot 'dist\codeconverge-0.2.0-py3-none-any.whl'
 $vsix = Join-Path $repositoryRoot 'dist\codeconverge-0.2.0.vsix'
 if (-not (Test-Path -LiteralPath $wheel)) { throw 'Build the Python wheel before installing.' }
 if (-not $SkipExtension -and -not (Test-Path -LiteralPath $vsix)) { throw 'Package the VS Code extension before installing.' }
+if (-not $Python) {
+    $launcher = Get-Command py.exe -ErrorAction SilentlyContinue
+    if ($launcher) {
+        $Python = (& $launcher.Source -3.13 -c 'import sys; print(sys.executable)')
+        if ($LASTEXITCODE -ne 0 -or -not $Python) { throw 'Install standard 64-bit CPython 3.13, or pass its executable with -Python.' }
+        $Python = $Python.Trim()
+    } else {
+        $pythonCommand = Get-Command python.exe -ErrorAction SilentlyContinue
+        if (-not $pythonCommand) { throw 'Python was not found. Install standard 64-bit CPython 3.13, or pass its executable with -Python.' }
+        $Python = $pythonCommand.Source
+    }
+}
 & $Python -c "import sys,struct,sysconfig; assert sys.version_info[:2] == (3,13) and struct.calcsize('P') == 8 and not sysconfig.get_config_var('Py_GIL_DISABLED'), 'Use standard 64-bit CPython 3.13'"
 if ($LASTEXITCODE -ne 0) { throw 'Unsupported Python runtime.' }
 

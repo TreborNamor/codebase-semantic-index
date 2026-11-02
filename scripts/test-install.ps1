@@ -1,5 +1,6 @@
+#Requires -Version 7.0
 [CmdletBinding()]
-param([string]$Python = 'C:\Program Files\Python313\python.exe')
+param([string]$Python = '')
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))

@@ -12,12 +12,16 @@ or untrusted window grants no source access. Closing a folder preserves its cach
 
 ## Install once
 
-Requirements: Windows x64, standard 64-bit CPython 3.13, VS Code 1.144 or later,
-and GitHub Copilot with the **Copilot** harness. Node/npm are needed to build the
-extension from source, but not to use the packaged VSIX. The tested CPU is an
+Requirements: Windows x64, **PowerShell 7 or later** (`pwsh`), standard 64-bit
+CPython 3.13 with the `py` launcher, Git, VS Code 1.144 or later with `code` on
+PATH, and GitHub Copilot with the **Copilot** harness. **Node.js 24 with npm** is
+the tested source-build runtime; Node/npm are not needed to use a prebuilt offline
+bundle. The tested CPU is an
 Intel i7-11370H with 16 GiB RAM; allow approximately 2 GiB for the indexing process.
 
-From this source checkout:
+On the new computer, install those prerequisites and run the following in
+**PowerShell 7**, rather than the older Windows PowerShell 5.1. No files from the
+old computer are required for this online installation:
 
 ```powershell
 git clone https://github.com/TreborNamor/codebase-semantic-index.git
@@ -27,6 +31,13 @@ py -3.13 -m venv .venv
 .\scripts\build.ps1
 .\scripts\install.ps1
 ```
+
+The installer discovers Python through `py -3.13` (or `python.exe` when no launcher
+is installed); `-Python 'C:\path\to\python.exe'` overrides discovery. The build
+generates the application wheel and VSIX locally. Prebuilt binaries, downloaded
+models and project indexes are intentionally absent from Git. See the
+[new-computer checklist](docs/INSTALLATION.md) for preflight checks, offline
+transfer and first-use verification.
 
 The installer uses hashed, pinned runtime wheels, creates a dedicated normal
 installation outside the checkout, verifies the official Qwen model, caches
